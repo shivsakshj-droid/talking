@@ -1,4 +1,3 @@
-// server.js - Production Ready for Render
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -7,129 +6,179 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io configuration for production
+// Socket.io with improved configuration for stable connections
 const io = socketIo(server, {
     cors: {
-        origin: "*", // Render will handle CORS
+        origin: "*",
         methods: ["GET", "POST"],
         credentials: true
     },
     transports: ['websocket', 'polling'],
+    allowUpgrades: true,
+    pingTimeout: 60000,        // 60 seconds ping timeout
+    pingInterval: 25000,       // Ping every 25 seconds
+    upgradeTimeout: 30000,
+    cookie: false,
     allowEIO3: true
 });
 
-// Serve static files
 app.use(express.static(path.join(__dirname)));
 
-// Health check endpoint for Render
-app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'healthy', 
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
-});
-
-// Root endpoint
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        connections: io.engine.clientsCount,
+        rooms: rooms.size
+    });
+});
+
 // Store rooms and participants
 const rooms = new Map();
+const userRoomMap = new Map(); // Track which room each socket is in
 
 io.on('connection', (socket) => {
-    console.log(`🔌 Client connected: ${socket.id}`);
-
+    console.log(`✅ Client connected: ${socket.id}`);
+    
+    // Send connection confirmation
+    socket.emit('connection-confirmed', { socketId: socket.id });
+    
+    // Handle joining a room
     socket.on('join-room', ({ room }) => {
-        if (!room) return;
-
-        // Leave previous rooms
-        const previousRooms = Array.from(socket.rooms).filter(r => r !== socket.id);
-        previousRooms.forEach(prevRoom => {
-            socket.leave(prevRoom);
-            if (rooms.has(prevRoom)) {
-                rooms.get(prevRoom).delete(socket.id);
-                if (rooms.get(prevRoom).size === 0) {
-                    rooms.delete(prevRoom);
+        if (!room) {
+            socket.emit('error', { message: 'Room ID required' });
+            return;
+        }
+        
+        // Leave previous room if exists
+        if (userRoomMap.has(socket.id)) {
+            const oldRoom = userRoomMap.get(socket.id);
+            if (rooms.has(oldRoom)) {
+                rooms.get(oldRoom).delete(socket.id);
+                socket.to(oldRoom).emit('user-left', { userId: socket.id });
+                
+                if (rooms.get(oldRoom).size === 0) {
+                    rooms.delete(oldRoom);
                 }
-                socket.to(prevRoom).emit('user-left', { userId: socket.id });
             }
-        });
-
+            socket.leave(oldRoom);
+        }
+        
         // Join new room
         socket.join(room);
+        userRoomMap.set(socket.id, room);
         
         if (!rooms.has(room)) {
             rooms.set(room, new Set());
         }
         rooms.get(room).add(socket.id);
-
-        console.log(`📡 ${socket.id} joined room: ${room}`);
-        console.log(`👥 Room ${room} now has ${rooms.get(room).size} participants`);
-
+        
+        console.log(`📡 ${socket.id} joined room: ${room} (Total: ${rooms.get(room).size})`);
+        
         // Send existing participants to the new user
         const existingUsers = Array.from(rooms.get(room)).filter(id => id !== socket.id);
         socket.emit('existing-users', { users: existingUsers });
-
+        
         // Notify others about new user
-        socket.to(room).emit('user-joined', { userId: socket.id });
+        if (existingUsers.length > 0) {
+            socket.to(room).emit('user-joined', { userId: socket.id });
+        }
+        
+        // Send room info
+        socket.emit('room-joined', { 
+            room, 
+            participantCount: rooms.get(room).size 
+        });
     });
-
+    
     // Handle WebRTC signaling
     socket.on('offer', ({ offer, to }) => {
-        console.log(`📤 Offer from ${socket.id} to ${to}`);
-        socket.to(to).emit('offer', { offer, from: socket.id });
-    });
-
-    socket.on('answer', ({ answer, to }) => {
-        console.log(`📥 Answer from ${socket.id} to ${to}`);
-        socket.to(to).emit('answer', { answer, from: socket.id });
-    });
-
-    socket.on('ice-candidate', ({ candidate, to }) => {
-        console.log(`❄️ ICE from ${socket.id} to ${to}`);
-        socket.to(to).emit('ice-candidate', { candidate, from: socket.id });
-    });
-
-    socket.on('leave-room', ({ room }) => {
-        if (room && rooms.has(room)) {
-            rooms.get(room).delete(socket.id);
-            socket.leave(room);
-            socket.to(room).emit('user-left', { userId: socket.id });
-            console.log(`👋 ${socket.id} left room: ${room}`);
-
-            if (rooms.get(room).size === 0) {
-                rooms.delete(room);
-            }
+        if (to && socket.to(to)) {
+            console.log(`📤 Offer from ${socket.id} to ${to}`);
+            socket.to(to).emit('offer', { offer, from: socket.id });
         }
     });
-
-    socket.on('disconnect', () => {
-        console.log(`❌ Client disconnected: ${socket.id}`);
-        
-        for (const [roomId, participants] of rooms.entries()) {
-            if (participants.has(socket.id)) {
-                participants.delete(socket.id);
-                socket.to(roomId).emit('user-left', { userId: socket.id });
-                if (participants.size === 0) {
-                    rooms.delete(roomId);
+    
+    socket.on('answer', ({ answer, to }) => {
+        if (to && socket.to(to)) {
+            console.log(`📥 Answer from ${socket.id} to ${to}`);
+            socket.to(to).emit('answer', { answer, from: socket.id });
+        }
+    });
+    
+    socket.on('ice-candidate', ({ candidate, to }) => {
+        if (to && socket.to(to)) {
+            console.log(`❄️ ICE from ${socket.id} to ${to}`);
+            socket.to(to).emit('ice-candidate', { candidate, from: socket.id });
+        }
+    });
+    
+    // Handle leaving room
+    socket.on('leave-room', () => {
+        if (userRoomMap.has(socket.id)) {
+            const room = userRoomMap.get(socket.id);
+            if (rooms.has(room)) {
+                rooms.get(room).delete(socket.id);
+                socket.to(room).emit('user-left', { userId: socket.id });
+                console.log(`👋 ${socket.id} left room: ${room}`);
+                
+                if (rooms.get(room).size === 0) {
+                    rooms.delete(room);
+                    console.log(`🗑️ Room ${room} deleted (empty)`);
                 }
             }
+            socket.leave(room);
+            userRoomMap.delete(socket.id);
+            socket.emit('left-room', { success: true });
         }
+    });
+    
+    // Handle disconnection
+    socket.on('disconnect', (reason) => {
+        console.log(`❌ Client disconnected: ${socket.id} - Reason: ${reason}`);
+        
+        if (userRoomMap.has(socket.id)) {
+            const room = userRoomMap.get(socket.id);
+            if (rooms.has(room)) {
+                rooms.get(room).delete(socket.id);
+                socket.to(room).emit('user-left', { userId: socket.id });
+                console.log(`👋 ${socket.id} removed from room: ${room}`);
+                
+                if (rooms.get(room).size === 0) {
+                    rooms.delete(room);
+                    console.log(`🗑️ Room ${room} deleted (empty)`);
+                }
+            }
+            userRoomMap.delete(socket.id);
+        }
+    });
+    
+    // Handle reconnection
+    socket.on('reconnect-attempt', () => {
+        console.log(`🔄 Reconnection attempt from ${socket.id}`);
     });
 });
 
-// Get port from environment variable (Render sets this automatically)
-const PORT = process.env.PORT || 3000;
+// Keep alive with ping
+setInterval(() => {
+    io.fetchSockets().then(sockets => {
+        console.log(`💓 Heartbeat: ${sockets.length} active connections, ${rooms.size} active rooms`);
+    });
+}, 30000);
 
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`
     ════════════════════════════════════════
-    🎙️  WALKIE-TALKIE SERVER - DEPLOYED
+    🎙️  WALKIE-TALKIE SERVER - STABLE VERSION
     ════════════════════════════════════════
     📡 Server running on port: ${PORT}
     🌍 Environment: ${process.env.NODE_ENV || 'development'}
+    🔗 WebSocket ready with improved stability
     ════════════════════════════════════════
     `);
 });
