@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Walkie-Talkie Pro | Real-time Voice Chat</title>
+    <title>Walkie-Talkie Pro | Stable Connection</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +36,6 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -97,7 +95,6 @@
             outline: none;
             transition: all 0.2s;
             font-family: monospace;
-            font-size: 14px;
         }
 
         #roomIdInput:focus {
@@ -125,10 +122,6 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
         }
 
         .btn-danger {
@@ -183,20 +176,18 @@
             animation: pulse 1.5s infinite;
         }
 
+        .led.connecting {
+            background: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+
         .led.disconnected {
             background: #ef4444;
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .status-text {
@@ -252,67 +243,31 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 4px solid white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .talk-button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .talk-button:active::before {
-            width: 200px;
-            height: 200px;
         }
 
         .talk-button.talking {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             transform: scale(1.05);
             box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
-            animation: vibrate 0.1s infinite;
         }
 
-        @keyframes vibrate {
-            0% {
-                transform: scale(1.05) translateX(0);
-            }
-
-            25% {
-                transform: scale(1.05) translateX(-2px);
-            }
-
-            75% {
-                transform: scale(1.05) translateX(2px);
-            }
-
-            100% {
-                transform: scale(1.05) translateX(0);
-            }
+        .talk-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .mic-icon {
             font-size: 64px;
             margin-bottom: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
 
         .talk-label {
             font-weight: bold;
             font-size: 18px;
             color: white;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .talk-status {
@@ -334,9 +289,6 @@
             color: #6b7280;
             text-transform: uppercase;
             margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .participants-list {
@@ -357,13 +309,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .participant-speaking {
-            background: #ef4444;
-            color: white;
-            animation: pulse 1s infinite;
         }
 
         .participant-dot {
@@ -371,10 +316,6 @@
             height: 6px;
             border-radius: 50%;
             background: #10b981;
-        }
-
-        .participant-speaking .participant-dot {
-            background: white;
         }
 
         .info-message {
@@ -385,6 +326,18 @@
             margin-bottom: 16px;
             font-size: 12px;
             color: #0c4a6e;
+        }
+
+        .info-message.error {
+            background: #fee2e2;
+            border-left-color: #dc2626;
+            color: #991b1b;
+        }
+
+        .info-message.warning {
+            background: #fed7aa;
+            border-left-color: #ea580c;
+            color: #9a3412;
         }
 
         footer {
@@ -400,654 +353,570 @@
             .dashboard {
                 padding: 16px;
             }
-
             .talk-button {
                 width: 140px;
                 height: 140px;
             }
-
             .mic-icon {
                 font-size: 48px;
-            }
-
-            .talk-label {
-                font-size: 14px;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
             }
         }
     </style>
 </head>
-
 <body>
-    <div class="dashboard">
-        <h1>📻 WALKIE-TALKIE PRO</h1>
-        <div class="subtitle">Real-time voice · Tap to talk · Global connection</div>
+<div class="dashboard">
+    <h1>📻 WALKIE-TALKIE PRO</h1>
+    <div class="subtitle">Stable connection · Real-time voice</div>
 
-        <div class="info-message" id="infoMessage">
-            💡 Tip: Create a private room by entering any name and share it with others
-        </div>
-
-        <div class="room-section">
-            <div class="input-group">
-                <label>🔐 ROOM ID</label>
-                <div class="room-input-wrapper">
-                    <input type="text" id="roomIdInput" placeholder="Enter room name (e.g., team-alpha)" value="lounge">
-                    <button id="joinBtn" class="btn-primary">Join Room</button>
-                </div>
-            </div>
-            <div class="button-group">
-                <button id="leaveBtn" class="btn-danger">Leave Room</button>
-            </div>
-        </div>
-
-        <div class="status-card">
-            <div class="status-badge">
-                <span class="led disconnected" id="statusLed"></span>
-                <span class="status-text" id="statusText">Disconnected</span>
-            </div>
-            <div class="room-badge" id="roomBadge">No room</div>
-            <div class="participant-count" id="participantCount">👥 0</div>
-        </div>
-
-        <div class="voice-visualizer" id="voiceVisualizer">
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-        </div>
-
-        <div class="talk-container">
-            <div id="talkButton" class="talk-button">
-                <div class="mic-icon">🎤</div>
-                <div class="talk-label">TAP TO TALK</div>
-                <div class="talk-status">Click to start speaking</div>
-            </div>
-        </div>
-
-        <div class="participants-section">
-            <div class="participants-title">
-                <span>👥 PARTICIPANTS IN ROOM</span>
-                <span id="participantBadge" style="font-size: 10px;"></span>
-            </div>
-            <div class="participants-list" id="participantsList">
-                <div class="participant">You (not joined)</div>
-            </div>
-        </div>
-
-        <footer>
-            <div>🎙️ <strong>How to use:</strong> Click the big button once to START talking, click again to STOP</div>
-            <div style="margin-top: 8px;">🔒 Private rooms · Works on any device · Real-time WebRTC audio</div>
-            <div style="margin-top: 8px; font-size: 10px;">⚡ Deployed on Render | Free to use</div>
-        </footer>
+    <div class="info-message" id="infoMessage">
+        💡 Tip: Enter a room name and click "Join Room" to start
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        // ==================== DOM Elements ====================
-        const roomInput = document.getElementById('roomIdInput');
-        const joinBtn = document.getElementById('joinBtn');
-        const leaveBtn = document.getElementById('leaveBtn');
-        const talkButton = document.getElementById('talkButton');
-        const statusLed = document.getElementById('statusLed');
-        const statusText = document.getElementById('statusText');
-        const roomBadge = document.getElementById('roomBadge');
-        const participantCountSpan = document.getElementById('participantCount');
-        const participantsListDiv = document.getElementById('participantsList');
-        const visualizerBars = document.querySelectorAll('.visualizer-bar');
-        const infoMessage = document.getElementById('infoMessage');
+    <div class="room-section">
+        <div class="input-group">
+            <label>🔐 ROOM ID</label>
+            <div class="room-input-wrapper">
+                <input type="text" id="roomIdInput" placeholder="Enter room name" value="lounge">
+                <button id="joinBtn" class="btn-primary">Join Room</button>
+            </div>
+        </div>
+        <div class="button-group">
+            <button id="leaveBtn" class="btn-danger">Leave Room</button>
+        </div>
+    </div>
 
-        // ==================== Global State ====================
-        let localStream = null;              // Our microphone stream
-        let peerConnections = new Map();     // peerId -> RTCPeerConnection
-        let socket = null;                  // Socket.io connection
-        let currentRoom = null;             // Current room name
-        let isTalking = false;              // Is microphone currently on?
-        let myUserId = null;                // Our socket ID
-        let users = new Set();               // Set of user IDs in the room
-        let audioElements = new Map();       // peerId -> audio element
-        let reconnectAttempts = 0;
-        let maxReconnectAttempts = 5;
+    <div class="status-card">
+        <div class="status-badge">
+            <span class="led disconnected" id="statusLed"></span>
+            <span class="status-text" id="statusText">Disconnected</span>
+        </div>
+        <div class="room-badge" id="roomBadge">No room</div>
+        <div class="participant-count" id="participantCount">👥 0</div>
+    </div>
 
-        // WebRTC configuration with multiple STUN servers for better connectivity
-        const configuration = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' },
-                { urls: 'stun:stun.stunprotocol.org:3478' }
-            ],
-            iceCandidatePoolSize: 10
+    <div class="voice-visualizer" id="voiceVisualizer">
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+    </div>
+
+    <div class="talk-container">
+        <div id="talkButton" class="talk-button disabled">
+            <div class="mic-icon">🎤</div>
+            <div class="talk-label">JOIN A ROOM</div>
+            <div class="talk-status">First join a room</div>
+        </div>
+    </div>
+
+    <div class="participants-section">
+        <div class="participants-title">👥 PARTICIPANTS</div>
+        <div class="participants-list" id="participantsList">
+            <div class="participant">You (not joined)</div>
+        </div>
+    </div>
+
+    <footer>
+        <div>🎙️ Click the button to start/stop talking</div>
+        <div style="margin-top: 4px;">🔒 Stable WebRTC connections with auto-reconnect</div>
+    </footer>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    // DOM Elements
+    const roomInput = document.getElementById('roomIdInput');
+    const joinBtn = document.getElementById('joinBtn');
+    const leaveBtn = document.getElementById('leaveBtn');
+    const talkButton = document.getElementById('talkButton');
+    const statusLed = document.getElementById('statusLed');
+    const statusText = document.getElementById('statusText');
+    const roomBadge = document.getElementById('roomBadge');
+    const participantCountSpan = document.getElementById('participantCount');
+    const participantsListDiv = document.getElementById('participantsList');
+    const visualizerBars = document.querySelectorAll('.visualizer-bar');
+    const infoMessage = document.getElementById('infoMessage');
+
+    // Global state
+    let localStream = null;
+    let peerConnections = new Map();
+    let socket = null;
+    let currentRoom = null;
+    let isTalking = false;
+    let myUserId = null;
+    let users = new Set();
+    let audioElements = new Map();
+    let reconnectAttempts = 0;
+    let maxReconnectAttempts = 10;
+    let heartbeatInterval = null;
+
+    // WebRTC configuration with TURN servers for better connectivity
+    const configuration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' },
+            { urls: 'stun:stun.stunprotocol.org:3478' }
+        ],
+        iceCandidatePoolSize: 10,
+        iceTransportPolicy: 'all',
+        bundlePolicy: 'max-bundle',
+        rtcpMuxPolicy: 'require'
+    };
+
+    // Helper functions
+    function showMessage(message, type = 'info') {
+        infoMessage.innerHTML = type === 'error' ? `⚠️ ${message}` : type === 'warning' ? `⚠️ ${message}` : `💡 ${message}`;
+        infoMessage.className = `info-message ${type}`;
+        setTimeout(() => {
+            if (infoMessage.innerHTML === `💡 ${message}` || infoMessage.innerHTML === `⚠️ ${message}`) {
+                infoMessage.innerHTML = '💡 Tip: Enter a room name and click "Join Room" to start';
+                infoMessage.className = 'info-message';
+            }
+        }, 4000);
+    }
+
+    function updateStatus(status, text) {
+        if (status === 'connected') {
+            statusLed.className = 'led connected';
+            statusText.textContent = text || 'Connected';
+        } else if (status === 'connecting') {
+            statusLed.className = 'led connecting';
+            statusText.textContent = text || 'Connecting...';
+        } else {
+            statusLed.className = 'led disconnected';
+            statusText.textContent = text || 'Disconnected';
+        }
+    }
+
+    // Microphone initialization
+    async function initMicrophone() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                    sampleRate: 48000
+                } 
+            });
+            localStream = stream;
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            console.log('✅ Microphone ready');
+            showMessage('Microphone ready! Join a room to start talking.');
+            return true;
+        } catch (err) {
+            console.error('Microphone error:', err);
+            showMessage('Please allow microphone access to use the app', 'error');
+            return false;
+        }
+    }
+
+    // Create peer connection
+    async function createPeerConnection(peerId) {
+        const pc = new RTCPeerConnection(configuration);
+        
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                pc.addTrack(track, localStream);
+            });
+        }
+        
+        pc.onicecandidate = (event) => {
+            if (event.candidate && socket && socket.connected) {
+                socket.emit('ice-candidate', {
+                    candidate: event.candidate,
+                    to: peerId
+                });
+            }
         };
-
-        // ==================== Helper Functions ====================
-        function showMessage(message, isError = false) {
-            infoMessage.innerHTML = isError ? `⚠️ ${message}` : `💡 ${message}`;
-            infoMessage.style.background = isError ? '#fee2e2' : '#e0f2fe';
-            infoMessage.style.borderLeftColor = isError ? '#dc2626' : '#0284c7';
-            setTimeout(() => {
-                if (infoMessage.innerHTML === `💡 ${message}` || infoMessage.innerHTML === `⚠️ ${message}`) {
-                    infoMessage.innerHTML = '💡 Tip: Create a private room by entering any name and share it with others';
-                    infoMessage.style.background = '#e0f2fe';
-                    infoMessage.style.borderLeftColor = '#0284c7';
-                }
-            }, 3000);
-        }
-
-        // ==================== Microphone Setup ====================
-        async function initMicrophone() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true,
-                        sampleRate: 48000
-                    }
-                });
-                localStream = stream;
-                // Initially muted (not talking)
-                localStream.getAudioTracks().forEach(track => track.enabled = false);
-                console.log('✅ Microphone ready');
-                showMessage('Microphone access granted! You can now join a room.');
-                return true;
-            } catch (err) {
-                console.error('❌ Microphone error:', err);
-                showMessage('Microphone access is required. Please allow microphone access and refresh the page.', true);
-                return false;
-            }
-        }
-
-        // ==================== Voice Visualizer ====================
-        function startVisualizer() {
-            if (!localStream) return;
-
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const source = audioContext.createMediaStreamSource(localStream);
-            const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            source.connect(analyser);
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-            function updateVisualizer() {
-                if (!isTalking) {
-                    visualizerBars.forEach(bar => {
-                        bar.style.height = '20px';
-                        bar.style.opacity = '0.5';
-                    });
-                    requestAnimationFrame(updateVisualizer);
-                    return;
-                }
-
-                analyser.getByteFrequencyData(dataArray);
-                let sum = 0;
-                for (let i = 0; i < 20; i++) sum += dataArray[i];
-                let avg = sum / 20;
-                let level = Math.min(1, avg / 150);
-
-                visualizerBars.forEach((bar, idx) => {
-                    let height = 20 + (level * 50 * (idx / visualizerBars.length));
-                    bar.style.height = `${Math.min(60, Math.max(20, height))}px`;
-                    bar.style.opacity = level > 0.1 ? '1' : '0.7';
-                });
-
-                requestAnimationFrame(updateVisualizer);
-            }
-
-            updateVisualizer();
-        }
-
-        // ==================== Peer Connection Management ====================
-        async function createPeerConnection(peerId) {
-            const pc = new RTCPeerConnection(configuration);
-
-            // Add local tracks to this connection
-            if (localStream) {
-                localStream.getTracks().forEach(track => {
-                    pc.addTrack(track, localStream);
-                });
-            }
-
-            // Handle ICE candidates
-            pc.onicecandidate = (event) => {
-                if (event.candidate && socket && socket.connected) {
-                    socket.emit('ice-candidate', {
-                        candidate: event.candidate,
-                        to: peerId
-                    });
-                }
-            };
-
-            // Handle remote stream (audio from other person)
-            pc.ontrack = (event) => {
-                console.log(`📡 Received audio from ${peerId}`);
-
-                // Remove old audio element if exists
-                if (audioElements.has(peerId)) {
-                    const oldAudio = audioElements.get(peerId);
-                    if (oldAudio && oldAudio.parentNode) oldAudio.parentNode.removeChild(oldAudio);
-                }
-
-                // Create new audio element
-                const audioEl = new Audio();
-                audioEl.srcObject = event.streams[0];
-                audioEl.autoplay = true;
-                audioEl.volume = 1.0;
-                audioEl.id = `audio-${peerId}`;
-                document.body.appendChild(audioEl);
-                audioElements.set(peerId, audioEl);
-
-                console.log(`✅ Playing audio from ${peerId}`);
-            };
-
-            // Handle connection state changes
-            pc.onconnectionstatechange = () => {
-                console.log(`Connection with ${peerId}: ${pc.connectionState}`);
-                if (pc.connectionState === 'connected') {
-                    updateStatus(true);
-                } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                    console.log(`Connection failed with ${peerId}`);
-                    closePeerConnection(peerId);
-                }
-            };
-
-            // Handle ICE connection state
-            pc.oniceconnectionstatechange = () => {
-                console.log(`ICE connection with ${peerId}: ${pc.iceConnectionState}`);
-                if (pc.iceConnectionState === 'failed') {
-                    closePeerConnection(peerId);
-                }
-            };
-
-            return pc;
-        }
-
-        function closePeerConnection(peerId) {
-            if (peerConnections.has(peerId)) {
-                peerConnections.get(peerId).close();
-                peerConnections.delete(peerId);
-            }
-
+        
+        pc.ontrack = (event) => {
+            console.log(`📡 Received audio from ${peerId}`);
+            
             if (audioElements.has(peerId)) {
-                const audio = audioElements.get(peerId);
-                if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
-                audioElements.delete(peerId);
+                const oldAudio = audioElements.get(peerId);
+                if (oldAudio && oldAudio.parentNode) oldAudio.parentNode.removeChild(oldAudio);
             }
-
-            users.delete(peerId);
-            updateParticipantsUI();
-
-            if (peerConnections.size === 0) {
-                updateStatus(false);
+            
+            const audioEl = new Audio();
+            audioEl.srcObject = event.streams[0];
+            audioEl.autoplay = true;
+            audioEl.volume = 1.0;
+            document.body.appendChild(audioEl);
+            audioElements.set(peerId, audioEl);
+        };
+        
+        pc.onconnectionstatechange = () => {
+            console.log(`Connection with ${peerId}: ${pc.connectionState}`);
+            if (pc.connectionState === 'failed') {
+                console.log(`Connection failed with ${peerId}, attempting reconnect...`);
+                setTimeout(() => reconnectWithPeer(peerId), 2000);
             }
+        };
+        
+        return pc;
+    }
+    
+    async function reconnectWithPeer(peerId) {
+        if (!currentRoom || !users.has(peerId)) return;
+        
+        console.log(`🔄 Reconnecting with ${peerId}`);
+        const pc = await createPeerConnection(peerId);
+        peerConnections.set(peerId, pc);
+        
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        
+        if (socket && socket.connected) {
+            socket.emit('offer', { offer: pc.localDescription, to: peerId });
         }
+    }
+    
+    function closePeerConnection(peerId) {
+        if (peerConnections.has(peerId)) {
+            peerConnections.get(peerId).close();
+            peerConnections.delete(peerId);
+        }
+        if (audioElements.has(peerId)) {
+            const audio = audioElements.get(peerId);
+            if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
+            audioElements.delete(peerId);
+        }
+        users.delete(peerId);
+        updateParticipantsUI();
+    }
 
-        // ==================== Toggle Talking ====================
-        function toggleTalking() {
-            if (!currentRoom || !localStream) {
-                showMessage('Please join a room first', true);
+    // Voice visualizer
+    function startVisualizer() {
+        if (!localStream) return;
+        
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaStreamSource(localStream);
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        function update() {
+            if (!isTalking) {
+                visualizerBars.forEach(bar => bar.style.height = '20px');
+                requestAnimationFrame(update);
                 return;
             }
-
-            if (peerConnections.size === 0 && users.size === 0) {
-                showMessage('No one else is in the room. Wait for others to join.', true);
-                return;
-            }
-
-            isTalking = !isTalking;
-
-            if (isTalking) {
-                // Enable microphone for all tracks
-                localStream.getAudioTracks().forEach(track => {
-                    track.enabled = true;
-                    console.log('Microphone enabled');
-                });
-                talkButton.classList.add('talking');
-                talkButton.querySelector('.talk-label').textContent = '🔴 TALKING';
-                talkButton.querySelector('.talk-status').textContent = 'Click to stop';
-                startVisualizer();
-                showMessage('You are now TALKING. Everyone in the room can hear you.');
-                console.log('🎤 Started talking');
-            } else {
-                // Disable microphone
-                localStream.getAudioTracks().forEach(track => {
-                    track.enabled = false;
-                    console.log('Microphone disabled');
-                });
-                talkButton.classList.remove('talking');
-                talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-                talkButton.querySelector('.talk-status').textContent = 'Click to start speaking';
-                showMessage('You stopped talking. Click the button again to speak.');
-                console.log('🔇 Stopped talking');
-            }
+            
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < 20; i++) sum += dataArray[i];
+            let avg = sum / 20;
+            let level = Math.min(1, avg / 150);
+            
+            visualizerBars.forEach((bar, idx) => {
+                let height = 20 + (level * 50 * (idx / visualizerBars.length));
+                bar.style.height = `${Math.min(60, Math.max(20, height))}px`;
+            });
+            
+            requestAnimationFrame(update);
         }
+        update();
+    }
 
-        // ==================== UI Updates ====================
-        function updateStatus(connected) {
-            if (connected) {
-                statusLed.className = 'led connected';
-                statusText.textContent = 'Connected';
-            } else {
-                statusLed.className = 'led disconnected';
-                statusText.textContent = 'Disconnected';
-            }
+    // Toggle talking
+    function toggleTalking() {
+        if (!currentRoom || !localStream) {
+            showMessage('Please join a room first', 'warning');
+            return;
         }
+        
+        if (users.size === 0 && peerConnections.size === 0) {
+            showMessage('No one else is in the room. Wait for others to join.', 'warning');
+            return;
+        }
+        
+        isTalking = !isTalking;
+        
+        if (isTalking) {
+            localStream.getAudioTracks().forEach(track => track.enabled = true);
+            talkButton.classList.add('talking');
+            talkButton.querySelector('.talk-label').textContent = '🔴 TALKING';
+            talkButton.querySelector('.talk-status').textContent = 'Click to stop';
+            startVisualizer();
+            showMessage('You are now talking! Everyone can hear you.');
+        } else {
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            talkButton.classList.remove('talking');
+            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
+            talkButton.querySelector('.talk-status').textContent = 'Click to speak';
+            showMessage('You stopped talking.');
+        }
+    }
 
-        function updateParticipantsUI() {
-            const count = users.size;
-            participantCountSpan.textContent = `👥 ${count + 1}`;
-
-            if (!currentRoom) {
-                participantsListDiv.innerHTML = '<div class="participant">You (not joined)</div>';
-                return;
-            }
-
-            let html = '<div class="participant">👤 You (you)</div>';
-            for (let userId of users) {
-                const shortId = userId.substring(0, 8);
-                html += `
+    // Update UI
+    function updateParticipantsUI() {
+        const count = users.size;
+        participantCountSpan.textContent = `👥 ${count + 1}`;
+        
+        if (!currentRoom) {
+            participantsListDiv.innerHTML = '<div class="participant">You (not joined)</div>';
+            return;
+        }
+        
+        let html = '<div class="participant">👤 You</div>';
+        for (let userId of users) {
+            const shortId = userId.substring(0, 8);
+            html += `
                 <div class="participant">
                     <span class="participant-dot"></span>
                     ${shortId}
                 </div>
             `;
-            }
-
-            if (users.size === 0) {
-                html += '<div style="color: #9ca3af; font-size: 12px; padding: 8px;">Waiting for others to join...</div>';
-            }
-
-            participantsListDiv.innerHTML = html;
         }
-
-        // ==================== Socket Setup ====================
-        function setupSocket() {
-            // Auto-detect server URL (works on both local and deployed)
-            const serverUrl = window.location.origin;
-
-            socket = io(serverUrl, {
-                transports: ['websocket', 'polling'],
-                reconnection: true,
-                reconnectionAttempts: maxReconnectAttempts,
-                reconnectionDelay: 1000,
-                reconnectionDelayMax: 5000,
-                timeout: 20000
-            });
-
-            socket.on('connect', () => {
-                console.log('✅ Connected to signaling server');
-                myUserId = socket.id;
-                showMessage('Connected to server! You can now join rooms.');
-                reconnectAttempts = 0;
-            });
-
-            socket.on('disconnect', () => {
-                console.log('❌ Disconnected from server');
-                showMessage('Disconnected from server. Trying to reconnect...', true);
-                updateStatus(false);
-            });
-
-            socket.on('connect_error', (error) => {
-                console.error('Connection error:', error);
-                reconnectAttempts++;
-                if (reconnectAttempts >= maxReconnectAttempts) {
-                    showMessage('Failed to connect to server. Please refresh the page.', true);
-                }
-            });
-
-            // Existing users in room
-            socket.on('existing-users', async ({ users: existingUsers }) => {
-                console.log('Existing users in room:', existingUsers);
-
-                for (let userId of existingUsers) {
-                    if (userId !== myUserId) {
-                        users.add(userId);
-
-                        // Create connection and send offer
-                        const pc = await createPeerConnection(userId);
-                        peerConnections.set(userId, pc);
-
-                        const offer = await pc.createOffer();
-                        await pc.setLocalDescription(offer);
-
-                        socket.emit('offer', {
-                            offer: pc.localDescription,
-                            to: userId
-                        });
-                    }
-                }
-
-                updateParticipantsUI();
-                if (existingUsers.length > 0) {
-                    showMessage(`${existingUsers.length} other user(s) in the room!`);
-                }
-            });
-
-            // New user joined
-            socket.on('user-joined', async ({ userId }) => {
-                if (userId === myUserId) return;
-
-                console.log(`👋 User joined: ${userId}`);
-                users.add(userId);
-
-                // Create connection to new user
-                const pc = await createPeerConnection(userId);
-                peerConnections.set(userId, pc);
-
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-
-                socket.emit('offer', {
-                    offer: pc.localDescription,
-                    to: userId
-                });
-
-                updateParticipantsUI();
-                showMessage(`New user joined the room! Total: ${users.size + 1} participants`);
-            });
-
-            // User left
-            socket.on('user-left', ({ userId }) => {
-                console.log(`👋 User left: ${userId}`);
-                closePeerConnection(userId);
-                updateParticipantsUI();
-                if (users.size > 0) {
-                    showMessage(`A user left the room. ${users.size + 1} participants remaining.`);
-                } else {
-                    showMessage('You are the only one in the room. Invite others to talk!');
-                }
-            });
-
-            // Handle offer
-            socket.on('offer', async ({ offer, from }) => {
-                if (from === myUserId) return;
-
-                console.log(`📤 Received offer from ${from}`);
-
-                let pc = peerConnections.get(from);
-                if (!pc) {
-                    pc = await createPeerConnection(from);
-                    peerConnections.set(from, pc);
-                    users.add(from);
-                    updateParticipantsUI();
-                }
-
-                await pc.setRemoteDescription(new RTCSessionDescription(offer));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-
-                socket.emit('answer', {
-                    answer: pc.localDescription,
-                    to: from
-                });
-            });
-
-            // Handle answer
-            socket.on('answer', async ({ answer, from }) => {
-                console.log(`📥 Received answer from ${from}`);
-                const pc = peerConnections.get(from);
-                if (pc) {
-                    await pc.setRemoteDescription(new RTCSessionDescription(answer));
-                }
-            });
-
-            // Handle ICE candidate
-            socket.on('ice-candidate', async ({ candidate, from }) => {
-                const pc = peerConnections.get(from);
-                if (pc && candidate) {
-                    try {
-                        await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                    } catch (err) {
-                        console.error('Error adding ICE candidate:', err);
-                    }
-                }
-            });
+        
+        if (users.size === 0) {
+            html += '<div style="color: #9ca3af; font-size: 12px; padding: 8px;">Waiting for others to join...</div>';
         }
+        
+        participantsListDiv.innerHTML = html;
+    }
 
-        // ==================== Room Management ====================
-        async function joinRoom() {
-            const roomId = roomInput.value.trim();
-            if (!roomId) {
-                showMessage('Please enter a room ID', true);
-                return;
+    // Socket setup with reconnection
+    function setupSocket() {
+        const serverUrl = window.location.origin;
+        
+        socket = io(serverUrl, {
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: maxReconnectAttempts,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000
+        });
+        
+        socket.on('connect', () => {
+            console.log('✅ Connected to server');
+            myUserId = socket.id;
+            updateStatus('connected', 'Connected');
+            reconnectAttempts = 0;
+            showMessage('Connected to server! Join a room to start.');
+            talkButton.classList.remove('disabled');
+            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
+            talkButton.querySelector('.talk-status').textContent = 'Click to speak';
+        });
+        
+        socket.on('connection-confirmed', ({ socketId }) => {
+            console.log(`Connection confirmed: ${socketId}`);
+            myUserId = socketId;
+        });
+        
+        socket.on('disconnect', (reason) => {
+            console.log(`Disconnected: ${reason}`);
+            updateStatus('connecting', 'Reconnecting...');
+            showMessage('Connection lost. Reconnecting...', 'warning');
+            talkButton.classList.add('disabled');
+            talkButton.querySelector('.talk-label').textContent = 'RECONNECTING';
+        });
+        
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+            reconnectAttempts++;
+            if (reconnectAttempts >= maxReconnectAttempts) {
+                showMessage('Failed to connect. Please refresh the page.', 'error');
             }
-
-            // Get microphone if not already
-            if (!localStream) {
-                const success = await initMicrophone();
-                if (!success) return;
-            }
-
-            // Setup socket if needed
-            if (!socket) {
-                setupSocket();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-
-            // Leave current room if any
-            if (currentRoom) {
-                leaveRoom();
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            currentRoom = roomId;
-
-            // Join room
-            socket.emit('join-room', { room: currentRoom });
-
-            roomBadge.textContent = `Room: ${currentRoom}`;
-            updateStatus(true);
-
-            // Reset talking state
-            if (isTalking) {
-                isTalking = false;
-                localStream.getAudioTracks().forEach(track => track.enabled = false);
-                talkButton.classList.remove('talking');
-                talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-                talkButton.querySelector('.talk-status').textContent = 'Click to start speaking';
-            }
-
-            showMessage(`✅ Joined room: ${currentRoom}. Share this room ID with others to talk!`);
-            console.log(`✅ Joined room: ${currentRoom}`);
-        }
-
-        function leaveRoom() {
-            if (!currentRoom || !socket) return;
-
-            // Close all peer connections
-            for (let [peerId, pc] of peerConnections) {
-                pc.close();
-                if (audioElements.has(peerId)) {
-                    const audio = audioElements.get(peerId);
-                    if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
+        });
+        
+        // Room events
+        socket.on('existing-users', async ({ users: existingUsers }) => {
+            console.log('Existing users:', existingUsers);
+            
+            for (let userId of existingUsers) {
+                if (userId !== myUserId) {
+                    users.add(userId);
+                    const pc = await createPeerConnection(userId);
+                    peerConnections.set(userId, pc);
+                    
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    socket.emit('offer', { offer: pc.localDescription, to: userId });
                 }
             }
-            peerConnections.clear();
-            audioElements.clear();
-            users.clear();
-
-            // Notify server
-            socket.emit('leave-room', { room: currentRoom });
-
-            currentRoom = null;
-            roomBadge.textContent = 'No room';
-            updateStatus(false);
+            
             updateParticipantsUI();
-
-            // Disable microphone
-            if (localStream) {
-                localStream.getAudioTracks().forEach(track => track.enabled = false);
-            }
-            if (isTalking) {
-                isTalking = false;
-                talkButton.classList.remove('talking');
-                talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-                talkButton.querySelector('.talk-status').textContent = 'Click to start speaking';
-            }
-
-            showMessage('Left the room. Join another room to start talking.');
-            console.log('🚪 Left room');
-        }
-
-        // ==================== Event Listeners ====================
-        joinBtn.addEventListener('click', joinRoom);
-        leaveBtn.addEventListener('click', leaveRoom);
-        talkButton.addEventListener('click', toggleTalking);
-
-        // Auto-join default room on page load (optional)
-        window.addEventListener('load', async () => {
-            console.log('🚀 Walkie-Talkie app loaded');
-            showMessage('Welcome! Click "Join Room" to start talking with others.');
-
-            // Request microphone permission on load (required by browsers)
-            try {
-                await navigator.mediaDevices.getUserMedia({ audio: true });
-                await initMicrophone();
-            } catch (err) {
-                console.log('Microphone not granted on load, will ask when joining');
+            if (existingUsers.length > 0) {
+                showMessage(`${existingUsers.length} other user(s) in the room!`);
             }
         });
-
-        // Clean up on page unload
-        window.addEventListener('beforeunload', () => {
-            if (peerConnections.size > 0) {
-                for (let [peerId, pc] of peerConnections) {
-                    pc.close();
+        
+        socket.on('user-joined', async ({ userId }) => {
+            if (userId === myUserId) return;
+            
+            console.log(`User joined: ${userId}`);
+            users.add(userId);
+            
+            const pc = await createPeerConnection(userId);
+            peerConnections.set(userId, pc);
+            
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            socket.emit('offer', { offer: pc.localDescription, to: userId });
+            
+            updateParticipantsUI();
+            showMessage(`New user joined! Total: ${users.size + 1} participants`);
+        });
+        
+        socket.on('user-left', ({ userId }) => {
+            console.log(`User left: ${userId}`);
+            closePeerConnection(userId);
+            updateParticipantsUI();
+            showMessage(`A user left. ${users.size + 1} participants remaining.`);
+        });
+        
+        socket.on('offer', async ({ offer, from }) => {
+            if (from === myUserId) return;
+            
+            let pc = peerConnections.get(from);
+            if (!pc) {
+                pc = await createPeerConnection(from);
+                peerConnections.set(from, pc);
+                users.add(from);
+                updateParticipantsUI();
+            }
+            
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            socket.emit('answer', { answer: pc.localDescription, to: from });
+        });
+        
+        socket.on('answer', async ({ answer, from }) => {
+            const pc = peerConnections.get(from);
+            if (pc) {
+                await pc.setRemoteDescription(new RTCSessionDescription(answer));
+            }
+        });
+        
+        socket.on('ice-candidate', async ({ candidate, from }) => {
+            const pc = peerConnections.get(from);
+            if (pc && candidate) {
+                try {
+                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (err) {
+                    console.error('ICE candidate error:', err);
                 }
             }
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
-            if (socket) {
-                socket.disconnect();
-            }
         });
-    </script>
-</body>
+        
+        socket.on('room-joined', ({ room, participantCount }) => {
+            console.log(`Joined room: ${room} with ${participantCount} participants`);
+        });
+    }
 
+    // Room management
+    async function joinRoom() {
+        const roomId = roomInput.value.trim();
+        if (!roomId) {
+            showMessage('Please enter a room ID', 'error');
+            return;
+        }
+        
+        if (!localStream) {
+            const success = await initMicrophone();
+            if (!success) return;
+        }
+        
+        if (!socket) {
+            setupSocket();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        if (currentRoom) {
+            leaveRoom();
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        currentRoom = roomId;
+        socket.emit('join-room', { room: currentRoom });
+        
+        roomBadge.textContent = `Room: ${currentRoom}`;
+        updateStatus('connected', 'Connected');
+        
+        if (isTalking) {
+            isTalking = false;
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            talkButton.classList.remove('talking');
+            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
+        }
+        
+        talkButton.classList.remove('disabled');
+        showMessage(`✅ Joined room: ${currentRoom}`);
+        console.log(`Joined room: ${currentRoom}`);
+    }
+    
+    function leaveRoom() {
+        if (!currentRoom || !socket) return;
+        
+        for (let [peerId, pc] of peerConnections) {
+            pc.close();
+            if (audioElements.has(peerId)) {
+                const audio = audioElements.get(peerId);
+                if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
+            }
+        }
+        peerConnections.clear();
+        audioElements.clear();
+        users.clear();
+        
+        socket.emit('leave-room', { room: currentRoom });
+        
+        currentRoom = null;
+        roomBadge.textContent = 'No room';
+        updateStatus('disconnected', 'Disconnected');
+        updateParticipantsUI();
+        
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+        }
+        if (isTalking) {
+            isTalking = false;
+            talkButton.classList.remove('talking');
+            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
+        }
+        
+        talkButton.classList.add('disabled');
+        talkButton.querySelector('.talk-label').textContent = 'JOIN A ROOM';
+        talkButton.querySelector('.talk-status').textContent = 'First join a room';
+        
+        showMessage('Left the room.');
+    }
+
+    // Event listeners
+    joinBtn.addEventListener('click', joinRoom);
+    leaveBtn.addEventListener('click', leaveRoom);
+    talkButton.addEventListener('click', toggleTalking);
+    
+    // Initialize on load
+    window.addEventListener('load', async () => {
+        console.log('Walkie-Talkie app loading...');
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            await initMicrophone();
+        } catch (err) {
+            console.log('Microphone not granted on load');
+        }
+        setupSocket();
+    });
+    
+    // Cleanup
+    window.addEventListener('beforeunload', () => {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        if (localStream) localStream.getTracks().forEach(track => track.stop());
+        if (socket) socket.disconnect();
+    });
+</script>
+</body>
 </html>
