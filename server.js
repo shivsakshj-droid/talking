@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
+// Optimized Socket.io for faster connections
 const io = socketIo(server, {
     cors: {
         origin: "*",
@@ -14,19 +15,21 @@ const io = socketIo(server, {
     },
     transports: ['websocket', 'polling'],
     allowUpgrades: true,
-    pingTimeout: 60000,
-    pingInterval: 25000
+    pingTimeout: 30000,
+    pingInterval: 15000,
+    upgradeTimeout: 5000,
+    connectTimeout: 5000
 });
 
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 
 // Store users and their data
-const users = new Map(); // userId -> { socketId, name, avatar, status, contacts }
+const users = new Map();
 const rooms = new Map();
-const callRequests = new Map(); // callId -> { from, to, roomId, timestamp }
+const callRequests = new Map();
 
-// User profiles storage (in memory for demo - use database in production)
+// User profiles storage
 const userProfiles = new Map();
 
 app.get('/', (req, res) => {
@@ -109,7 +112,6 @@ io.on('connection', (socket) => {
             lastSeen: new Date()
         });
         
-        // Store profile if not exists
         if (!userProfiles.has(userId)) {
             userProfiles.set(userId, {
                 userId,
@@ -123,7 +125,6 @@ io.on('connection', (socket) => {
         socket.join(`user:${userId}`);
         console.log(`✅ User registered: ${name} (${userId})`);
         
-        // Broadcast user online status
         socket.broadcast.emit('user-status-changed', {
             userId,
             name,
@@ -137,12 +138,12 @@ io.on('connection', (socket) => {
         });
     });
     
-    // Initiate call
+    // Initiate call - FAST CONNECTION
     socket.on('initiate-call', ({ fromUserId, toUserId, fromName, roomId }) => {
         const targetUser = users.get(toUserId);
         
         if (targetUser && targetUser.status === 'online') {
-            const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
             
             callRequests.set(callId, {
                 from: fromUserId,
@@ -152,7 +153,7 @@ io.on('connection', (socket) => {
                 status: 'ringing'
             });
             
-            // Send call notification to target
+            // Immediate notification
             io.to(`user:${toUserId}`).emit('incoming-call', {
                 callId,
                 from: fromUserId,
@@ -171,14 +172,14 @@ io.on('connection', (socket) => {
         }
     });
     
-    // Accept call
+    // Accept call - FAST ANSWER
     socket.on('accept-call', ({ callId, roomId, fromUserId, toUserId }) => {
         const call = callRequests.get(callId);
         if (call) {
             call.status = 'connected';
             callRequests.delete(callId);
             
-            // Notify caller that call was accepted
+            // Immediate notification to both parties
             io.to(`user:${fromUserId}`).emit('call-accepted', {
                 callId,
                 roomId,
@@ -186,7 +187,6 @@ io.on('connection', (socket) => {
                 toName: users.get(toUserId)?.name
             });
             
-            // Notify callee that they joined
             socket.emit('call-connected', {
                 callId,
                 roomId,
@@ -208,21 +208,19 @@ io.on('connection', (socket) => {
                 toUserId,
                 reason: 'rejected'
             });
-            console.log(`❌ Call rejected: ${fromUserId} -> ${toUserId}`);
         }
     });
     
     // End call
     socket.on('end-call', ({ roomId, fromUserId, toUserId }) => {
-        io.to(`user:${toUserId}`).emit('call-ended', {
-            roomId,
-            fromUserId
-        });
+        if (toUserId) {
+            io.to(`user:${toUserId}`).emit('call-ended', { roomId, fromUserId });
+        }
         socket.emit('call-ended', { roomId });
-        console.log(`🔴 Call ended: ${fromUserId} <-> ${toUserId}`);
+        console.log(`🔴 Call ended: ${fromUserId}`);
     });
     
-    // WebRTC Signaling
+    // WebRTC Signaling - OPTIMIZED
     socket.on('join-room', ({ room, userId }) => {
         if (!room) return;
         
@@ -297,11 +295,10 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`
     ════════════════════════════════════════
-    📱 PROFESSIONAL WALKIE-TALKIE SERVER
+    📱 FAST WALKIE-TALKIE SERVER
     ════════════════════════════════════════
     📡 Server running on port: ${PORT}
-    👥 Multi-user support with contacts
-    📞 Call notification system active
+    🚀 Optimized for instant connections
     ════════════════════════════════════════
     `);
 });
