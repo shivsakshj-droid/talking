@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ProTalk - Professional Walkie-Talkie</title>
+    <title>ProTalk - Fast Walkie-Talkie</title>
     <style>
         * {
             margin: 0;
@@ -18,7 +18,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0;
         }
 
         /* Phone Container */
@@ -28,16 +27,14 @@
             height: 100vh;
             max-height: 900px;
             background: #0a0a0a;
-            border-radius: 0;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 0 0 0 rgba(0,0,0,0.5);
         }
 
         @media (min-width: 768px) {
             .phone-container {
-                border-radius: 40px;
                 height: 800px;
+                border-radius: 40px;
                 margin: 20px auto;
             }
         }
@@ -96,17 +93,6 @@
             font-family: monospace;
         }
 
-        .edit-profile {
-            margin-top: 12px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
         /* Tabs */
         .tabs {
             display: flex;
@@ -134,13 +120,13 @@
         }
 
         /* Contact List */
-        .contact-list, .call-history {
+        .contact-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .contact-item, .history-item {
+        .contact-item {
             background: #1a1a1a;
             border-radius: 16px;
             padding: 12px;
@@ -151,12 +137,11 @@
             transition: all 0.2s;
         }
 
-        .contact-item:hover, .history-item:hover {
+        .contact-item:hover {
             background: #2a2a2a;
-            transform: translateX(4px);
         }
 
-        .contact-avatar, .history-avatar {
+        .contact-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -169,11 +154,11 @@
             color: white;
         }
 
-        .contact-info, .history-info {
+        .contact-info {
             flex: 1;
         }
 
-        .contact-name, .history-name {
+        .contact-name {
             font-size: 16px;
             font-weight: 600;
             color: white;
@@ -198,15 +183,10 @@
             background: #6b7280;
         }
 
-        .call-time {
-            font-size: 11px;
-            color: #666;
-        }
-
         .call-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 20px;
             color: white;
             font-weight: 600;
@@ -214,8 +194,8 @@
             transition: all 0.2s;
         }
 
-        .call-button:hover {
-            transform: scale(1.05);
+        .call-button:active {
+            transform: scale(0.95);
         }
 
         .add-contact {
@@ -241,7 +221,6 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
         }
 
         .modal.active {
@@ -254,6 +233,11 @@
             padding: 24px;
             width: 90%;
             max-width: 350px;
+        }
+
+        .modal-content h3 {
+            color: white;
+            margin-bottom: 16px;
         }
 
         .modal-content input {
@@ -379,37 +363,96 @@
             margin-bottom: 48px;
         }
 
-        .end-call {
-            background: #ef4444;
+        /* TALK BUTTON - Toggle to Talk */
+        .talk-button {
+            background: white;
             border: none;
-            padding: 16px 32px;
+            padding: 20px 50px;
+            border-radius: 60px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .talk-button.talking {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(239,68,68,0.5);
+        }
+
+        .end-call {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            padding: 12px 32px;
             border-radius: 40px;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
         }
 
-        .push-to-talk {
-            margin-top: 30px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            padding: 20px 40px;
-            border-radius: 60px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        .push-to-talk:active {
+        .end-call:active {
             transform: scale(0.95);
-            background: white;
-            color: #667eea;
         }
 
-        /* Hide elements */
+        .voice-visualizer {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            height: 60px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visualizer-bar {
+            width: 8px;
+            height: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 4px;
+            transition: height 0.05s ease;
+        }
+
+        .history-item {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .history-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-name {
+            color: white;
+            font-weight: 600;
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: #666;
+        }
+
         .hidden {
             display: none;
         }
@@ -428,7 +471,6 @@
             <div class="profile-avatar" id="profileAvatar">👤</div>
             <div class="profile-name" id="profileName">Set up profile</div>
             <div class="profile-id" id="profileId">Not registered</div>
-            <button class="edit-profile" onclick="showSetupModal()">Edit Profile</button>
         </div>
 
         <!-- Tabs -->
@@ -445,9 +487,9 @@
             </div>
         </div>
 
-        <!-- History Tab (Hidden initially) -->
+        <!-- History Tab -->
         <div id="historyTab" style="display: none;">
-            <div class="call-history" id="callHistory"></div>
+            <div id="callHistory"></div>
         </div>
     </div>
 </div>
@@ -455,11 +497,11 @@
 <!-- Setup Profile Modal -->
 <div class="modal" id="setupModal">
     <div class="modal-content">
-        <h3 style="color: white; margin-bottom: 16px;">Set up your profile</h3>
-        <input type="text" id="userName" placeholder="Your name" value="User">
-        <input type="text" id="userId" placeholder="User ID (unique)" value="user_">
+        <h3>Set up your profile</h3>
+        <input type="text" id="userName" placeholder="Your name">
+        <input type="text" id="userId" placeholder="User ID (unique)">
         <div class="modal-buttons">
-            <button onclick="saveProfile()">Save</button>
+            <button onclick="saveProfile()" style="background: #667eea; color: white;">Save</button>
         </div>
     </div>
 </div>
@@ -467,11 +509,11 @@
 <!-- Add Contact Modal -->
 <div class="modal" id="addContactModal">
     <div class="modal-content">
-        <h3 style="color: white;">Add Contact</h3>
+        <h3>Add Contact</h3>
         <input type="text" id="contactUserId" placeholder="User ID">
-        <input type="text" id="contactName" placeholder="Contact name (optional)">
+        <input type="text" id="contactName" placeholder="Contact name">
         <div class="modal-buttons">
-            <button onclick="addContact()">Add</button>
+            <button onclick="addContact()" style="background: #667eea; color: white;">Add</button>
             <button onclick="closeAddContactModal()">Cancel</button>
         </div>
     </div>
@@ -491,10 +533,22 @@
 <div class="call-screen" id="callScreen">
     <div class="call-avatar" id="callAvatar">👤</div>
     <div class="caller-name" id="callScreenName">Calling...</div>
-    <div class="call-status" id="callStatus">Connecting</div>
-    <div class="push-to-talk" id="pushToTalk" onmousedown="startTalking()" onmouseup="stopTalking()" ontouchstart="startTalking()" ontouchend="stopTalking()">
-        🎤 HOLD TO TALK
+    <div class="call-status" id="callStatus">Connecting...</div>
+    
+    <div class="voice-visualizer" id="voiceVisualizer">
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
+        <div class="visualizer-bar"></div>
     </div>
+    
+    <!-- TALK BUTTON - Click to Talk, Click again to Stop -->
+    <button class="talk-button" id="talkButton" onclick="toggleTalk()">
+        🎤 TALK
+    </button>
+    
     <button class="end-call" onclick="endCall()">End Call</button>
 </div>
 
@@ -512,36 +566,34 @@
     let currentRoom = null;
     let isTalking = false;
     let remoteAudio = null;
+    let visualizerInterval = null;
 
-    // ==================== WebRTC Configuration ====================
+    // WebRTC Configuration
     const configuration = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' },
-            { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' }
-        ]
+            { urls: 'stun:stun2.l.google.com:19302' }
+        ],
+        iceCandidatePoolSize: 5
     };
 
     // ==================== Initialize ====================
     async function init() {
-        // Check for saved user
         const savedUser = localStorage.getItem('protalk_user');
         if (savedUser) {
-            const user = JSON.parse(savedUser);
-            currentUser = user;
+            currentUser = JSON.parse(savedUser);
             updateProfileUI();
             connectSocket();
         } else {
             showSetupModal();
         }
         
-        // Request microphone
+        // Request microphone immediately for faster connection
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            localStream = stream;
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             localStream.getAudioTracks().forEach(track => track.enabled = false);
+            console.log('✅ Microphone ready');
         } catch (err) {
             console.error('Microphone error:', err);
         }
@@ -560,7 +612,6 @@
             });
         });
         
-        // Update time
         updateTime();
         setInterval(updateTime, 1000);
     }
@@ -576,7 +627,7 @@
         document.getElementById('userId').value = 'user_' + Math.floor(Math.random() * 10000);
     }
     
-    async function saveProfile() {
+    function saveProfile() {
         const name = document.getElementById('userName').value.trim();
         let userId = document.getElementById('userId').value.trim();
         
@@ -599,18 +650,7 @@
         updateProfileUI();
         document.getElementById('setupModal').classList.remove('active');
         
-        // Register with server
-        if (socket && socket.connected) {
-            socket.emit('register-user', {
-                userId: currentUser.userId,
-                name: currentUser.name,
-                avatar: currentUser.avatar
-            });
-        } else {
-            connectSocket();
-        }
-        
-        // Load contacts
+        connectSocket();
         loadContacts();
     }
     
@@ -624,10 +664,15 @@
     
     // ==================== Socket Connection ====================
     function connectSocket() {
-        socket = io();
+        socket = io({
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000
+        });
         
         socket.on('connect', () => {
-            console.log('Connected to server');
+            console.log('✅ Connected instantly');
             if (currentUser) {
                 socket.emit('register-user', {
                     userId: currentUser.userId,
@@ -637,30 +682,29 @@
             }
         });
         
-        socket.on('registration-success', ({ profile }) => {
-            console.log('Registration successful');
+        socket.on('registration-success', () => {
+            console.log('✅ Ready to make calls');
         });
         
         socket.on('user-status-changed', ({ userId, status }) => {
             updateContactStatus(userId, status);
         });
         
+        // Incoming call - INSTANT
         socket.on('incoming-call', ({ callId, from, fromName, roomId }) => {
             pendingCall = { callId, from, fromName, roomId };
             document.getElementById('callerName').textContent = `${fromName} is calling...`;
             document.getElementById('callNotification').classList.add('active');
-            
-            // Add to call history
-            addToHistory(fromName, 'incoming', 'missed');
         });
         
         socket.on('call-accepted', ({ callId, roomId, toUserId, toName }) => {
             document.getElementById('callStatus').textContent = 'Connected';
+            document.getElementById('callStatus').style.color = '#4ade80';
             currentRoom = roomId;
             startCall(roomId, toUserId);
         });
         
-        socket.on('call-rejected', ({ callId }) => {
+        socket.on('call-rejected', () => {
             alert('Call rejected');
             document.getElementById('callScreen').classList.remove('active');
             currentCall = null;
@@ -691,16 +735,6 @@
             if (peerConnection && candidate) {
                 await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
             }
-        });
-        
-        socket.on('user-joined', ({ userId }) => {
-            if (peerConnection) {
-                // Handle user joined for group calls
-            }
-        });
-        
-        socket.on('user-left', ({ userId }) => {
-            console.log('User left:', userId);
         });
     }
     
@@ -738,7 +772,6 @@
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 localStream.getAudioTracks().forEach(track => track.enabled = false);
             } catch (err) {
-                console.error('Microphone error:', err);
                 return;
             }
         }
@@ -754,6 +787,69 @@
             await peerConnection.setLocalDescription(offer);
             socket.emit('offer', { offer: peerConnection.localDescription, to: toUserId });
         }
+        
+        startVisualizer();
+    }
+    
+    // ==================== Voice Visualizer ====================
+    function startVisualizer() {
+        if (!localStream) return;
+        
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaStreamSource(localStream);
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 128;
+        source.connect(analyser);
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
+        function update() {
+            if (!isTalking) {
+                document.querySelectorAll('.visualizer-bar').forEach(bar => {
+                    bar.style.height = '20px';
+                    bar.style.opacity = '0.3';
+                });
+                requestAnimationFrame(update);
+                return;
+            }
+            
+            analyser.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < 10; i++) sum += dataArray[i];
+            let level = Math.min(1, sum / 300);
+            
+            document.querySelectorAll('.visualizer-bar').forEach((bar, idx) => {
+                let height = 20 + (level * 60 * (idx / 6));
+                bar.style.height = `${Math.min(70, Math.max(20, height))}px`;
+                bar.style.opacity = level > 0.1 ? '1' : '0.5';
+            });
+            
+            requestAnimationFrame(update);
+        }
+        update();
+    }
+    
+    // ==================== TALK BUTTON - TOGGLE ====================
+    function toggleTalk() {
+        if (!currentCall || !localStream) {
+            alert('No active call');
+            return;
+        }
+        
+        isTalking = !isTalking;
+        
+        if (isTalking) {
+            // Start talking
+            localStream.getAudioTracks().forEach(track => track.enabled = true);
+            document.getElementById('talkButton').classList.add('talking');
+            document.getElementById('talkButton').innerHTML = '🔴 TALKING...';
+            console.log('🎤 Started talking');
+        } else {
+            // Stop talking
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            document.getElementById('talkButton').classList.remove('talking');
+            document.getElementById('talkButton').innerHTML = '🎤 TALK';
+            console.log('🔇 Stopped talking');
+        }
     }
     
     // ==================== Call Actions ====================
@@ -766,9 +862,12 @@
         const roomId = `call_${Date.now()}`;
         currentCall = { to: userId, name: userName, roomId };
         
-        document.getElementById('callScreenName').textContent = `Calling ${userName}...`;
-        document.getElementById('callStatus').textContent = 'Ringing';
+        document.getElementById('callScreenName').textContent = userName;
+        document.getElementById('callStatus').textContent = 'Ringing...';
         document.getElementById('callScreen').classList.add('active');
+        document.getElementById('talkButton').classList.remove('talking');
+        document.getElementById('talkButton').innerHTML = '🎤 TALK';
+        isTalking = false;
         
         socket.emit('initiate-call', {
             fromUserId: currentUser.userId,
@@ -783,9 +882,12 @@
     function acceptCall() {
         if (pendingCall) {
             document.getElementById('callNotification').classList.remove('active');
-            document.getElementById('callScreenName').textContent = `${pendingCall.fromName}`;
+            document.getElementById('callScreenName').textContent = pendingCall.fromName;
             document.getElementById('callStatus').textContent = 'Connecting...';
             document.getElementById('callScreen').classList.add('active');
+            document.getElementById('talkButton').classList.remove('talking');
+            document.getElementById('talkButton').innerHTML = '🎤 TALK';
+            isTalking = false;
             
             socket.emit('accept-call', {
                 callId: pendingCall.callId,
@@ -797,6 +899,8 @@
             currentCall = pendingCall;
             startCall(pendingCall.roomId, pendingCall.from);
             pendingCall = null;
+            
+            addToHistory(currentCall.fromName, 'incoming', 'answered');
         }
     }
     
@@ -831,35 +935,18 @@
             remoteAudio = null;
         }
         
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+        }
+        
         document.getElementById('callScreen').classList.remove('active');
+        document.getElementById('callNotification').classList.remove('active');
         currentCall = null;
         currentRoom = null;
         isTalking = false;
-        
-        if (localStream) {
-            localStream.getAudioTracks().forEach(track => track.enabled = false);
-        }
     }
     
-    function startTalking() {
-        if (currentCall && localStream) {
-            isTalking = true;
-            localStream.getAudioTracks().forEach(track => track.enabled = true);
-            document.getElementById('pushToTalk').style.background = 'white';
-            document.getElementById('pushToTalk').style.color = '#667eea';
-        }
-    }
-    
-    function stopTalking() {
-        if (localStream) {
-            isTalking = false;
-            localStream.getAudioTracks().forEach(track => track.enabled = false);
-            document.getElementById('pushToTalk').style.background = 'rgba(255,255,255,0.2)';
-            document.getElementById('pushToTalk').style.color = 'white';
-        }
-    }
-    
-    // ==================== Contacts Management ====================
+    // ==================== Contacts ====================
     async function loadContacts() {
         if (!currentUser) return;
         
@@ -881,26 +968,31 @@
         }
         
         container.innerHTML = contacts.map(contact => `
-            <div class="contact-item" onclick="makeCall('${contact.userId}', '${contact.name}')">
+            <div class="contact-item">
                 <div class="contact-avatar">${contact.name.charAt(0)}</div>
                 <div class="contact-info">
                     <div class="contact-name">${contact.name}</div>
                     <div class="contact-status">
                         <span class="status-dot" id="status-${contact.userId}"></span>
-                        <span>Checking status...</span>
+                        <span id="status-text-${contact.userId}">Checking...</span>
                     </div>
                 </div>
-                <button class="call-button" onclick="event.stopPropagation(); makeCall('${contact.userId}', '${contact.name}')">Call</button>
+                <button class="call-button" onclick="makeCall('${contact.userId}', '${contact.name}')">Call</button>
             </div>
         `).join('');
+        
+        // Check status for each contact
+        contacts.forEach(contact => {
+            updateContactStatus(contact.userId, 'offline');
+        });
     }
     
     function updateContactStatus(userId, status) {
         const dot = document.getElementById(`status-${userId}`);
+        const text = document.getElementById(`status-text-${userId}`);
         if (dot) {
             dot.className = `status-dot ${status === 'online' ? '' : 'offline'}`;
-            const span = dot.nextElementSibling;
-            if (span) span.textContent = status === 'online' ? 'Online' : 'Offline';
+            if (text) text.textContent = status === 'online' ? 'Online' : 'Offline';
         }
     }
     
@@ -954,26 +1046,21 @@
             name,
             type,
             status,
-            time: new Date().toLocaleTimeString(),
-            date: new Date().toLocaleDateString()
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         
-        // Keep only last 50 calls
         if (callHistory.length > 50) callHistory.pop();
-        
         localStorage.setItem('protalk_history', JSON.stringify(callHistory));
         loadCallHistory();
     }
     
     function loadCallHistory() {
         const saved = localStorage.getItem('protalk_history');
-        if (saved) {
-            callHistory = JSON.parse(saved);
-        }
+        if (saved) callHistory = JSON.parse(saved);
         
         const container = document.getElementById('callHistory');
         if (callHistory.length === 0) {
-            container.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">No call history yet</div>';
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">No call history</div>';
             return;
         }
         
@@ -982,7 +1069,7 @@
                 <div class="history-avatar">${call.name.charAt(0)}</div>
                 <div class="history-info">
                     <div class="history-name">${call.name}</div>
-                    <div class="call-time">${call.type === 'outgoing' ? '📞 Outgoing' : '📱 Incoming'} • ${call.time} • ${call.date}</div>
+                    <div class="history-time">${call.type === 'outgoing' ? '📞 Outgoing' : '📱 Incoming'} • ${call.time}</div>
                 </div>
                 <div style="font-size: 12px; color: ${call.status === 'missed' ? '#ef4444' : '#4ade80'}">
                     ${call.status === 'missed' ? 'Missed' : call.status === 'dialed' ? 'Dialed' : 'Connected'}
@@ -991,7 +1078,7 @@
         `).join('');
     }
     
-    // Initialize
+    // Start
     init();
 </script>
 </body>
