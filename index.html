@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Walkie-Talkie Pro | Stable Connection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ProTalk - Professional Walkie-Talkie</title>
     <style>
         * {
             margin: 0;
@@ -13,513 +13,699 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 0;
+        }
+
+        /* Phone Container */
+        .phone-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 900px;
+            background: #0a0a0a;
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 0 0 rgba(0,0,0,0.5);
+        }
+
+        @media (min-width: 768px) {
+            .phone-container {
+                border-radius: 40px;
+                height: 800px;
+                margin: 20px auto;
+            }
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: #000;
+            padding: 12px 20px 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main-content {
+            height: calc(100% - 50px);
+            overflow-y: auto;
             padding: 20px;
         }
 
-        .dashboard {
-            max-width: 550px;
-            width: 100%;
-            background: white;
-            border-radius: 32px;
-            padding: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
+        /* Profile Section */
+        .profile-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .room-section {
-            background: #f3f4f6;
-            border-radius: 20px;
-            padding: 16px;
+            border-radius: 24px;
+            padding: 20px;
             margin-bottom: 20px;
+            text-align: center;
         }
 
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        .input-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .room-input-wrapper {
-            display: flex;
-            gap: 10px;
-        }
-
-        #roomIdInput {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s;
-            font-family: monospace;
-        }
-
-        #roomIdInput:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
-            border: none;
-            padding: 12px 20px;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .button-group button {
-            flex: 1;
-        }
-
-        .status-card {
-            background: #f3f4f6;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .led {
-            width: 12px;
-            height: 12px;
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: #9ca3af;
-            transition: all 0.3s;
-        }
-
-        .led.connected {
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-            animation: pulse 1.5s infinite;
-        }
-
-        .led.connecting {
-            background: #f59e0b;
-            animation: pulse 1s infinite;
-        }
-
-        .led.disconnected {
-            background: #ef4444;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .status-text {
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .room-badge {
             background: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-family: monospace;
-            font-weight: 600;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
             color: #667eea;
         }
 
-        .participant-count {
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .profile-id {
             font-size: 12px;
-            color: #6b7280;
+            color: rgba(255,255,255,0.8);
+            font-family: monospace;
         }
 
-        .voice-visualizer {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin: 20px 0;
-            height: 50px;
-            align-items: center;
-        }
-
-        .visualizer-bar {
-            width: 6px;
-            height: 20px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
-            transition: height 0.05s ease;
-        }
-
-        .talk-container {
-            display: flex;
-            justify-content: center;
-            margin: 24px 0;
-        }
-
-        .talk-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .edit-profile {
+            margin-top: 12px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border: 4px solid white;
         }
 
-        .talk-button.talking {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1a1a1a;
+            padding: 4px;
+            border-radius: 30px;
         }
 
-        .talk-button.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 26px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
         }
 
-        .mic-icon {
-            font-size: 64px;
-            margin-bottom: 8px;
-        }
-
-        .talk-label {
-            font-weight: bold;
-            font-size: 18px;
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
-        .talk-status {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: 6px;
-        }
-
-        .participants-section {
-            background: #f3f4f6;
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: 16px;
-        }
-
-        .participants-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .participants-list {
+        /* Contact List */
+        .contact-list, .call-history {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            max-height: 120px;
-            overflow-y: auto;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .participant {
-            background: white;
-            padding: 6px 12px;
-            border-radius: 20px;
+        .contact-item, .history-item {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .contact-item:hover, .history-item:hover {
+            background: #2a2a2a;
+            transform: translateX(4px);
+        }
+
+        .contact-avatar, .history-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .contact-info, .history-info {
+            flex: 1;
+        }
+
+        .contact-name, .history-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .contact-status {
             font-size: 12px;
-            font-weight: 500;
-            color: #374151;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .participant-dot {
-            width: 6px;
-            height: 6px;
+        .status-dot {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: #10b981;
+            background: #4ade80;
         }
 
-        .info-message {
-            background: #e0f2fe;
-            border-left: 4px solid #0284c7;
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 12px;
-            color: #0c4a6e;
+        .status-dot.offline {
+            background: #6b7280;
         }
 
-        .info-message.error {
-            background: #fee2e2;
-            border-left-color: #dc2626;
-            color: #991b1b;
-        }
-
-        .info-message.warning {
-            background: #fed7aa;
-            border-left-color: #ea580c;
-            color: #9a3412;
-        }
-
-        footer {
-            text-align: center;
+        .call-time {
             font-size: 11px;
-            color: #9ca3af;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
+            color: #666;
         }
 
-        @media (max-width: 500px) {
-            .dashboard {
-                padding: 16px;
-            }
-            .talk-button {
-                width: 140px;
-                height: 140px;
-            }
-            .mic-icon {
-                font-size: 48px;
-            }
+        .call-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .call-button:hover {
+            transform: scale(1.05);
+        }
+
+        .add-contact {
+            background: #2a2a2a;
+            border: 2px dashed #667eea;
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            color: #667eea;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 32px;
+            padding: 24px;
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: white;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Call Notification */
+        .call-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border-radius: 24px;
+            padding: 20px;
+            z-index: 1001;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .call-notification.active {
+            transform: translateY(0);
+        }
+
+        .call-notification h4 {
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .call-notification p {
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .call-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .accept-call, .reject-call {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .accept-call {
+            background: #4ade80;
+            color: white;
+        }
+
+        .reject-call {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Call Screen */
+        .call-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1002;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .call-screen.active {
+            display: flex;
+        }
+
+        .call-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin-bottom: 24px;
+        }
+
+        .caller-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .call-status {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 48px;
+        }
+
+        .end-call {
+            background: #ef4444;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 40px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .push-to-talk {
+            margin-top: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            padding: 20px 40px;
+            border-radius: 60px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .push-to-talk:active {
+            transform: scale(0.95);
+            background: white;
+            color: #667eea;
+        }
+
+        /* Hide elements */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-<div class="dashboard">
-    <h1>📻 WALKIE-TALKIE PRO</h1>
-    <div class="subtitle">Stable connection · Real-time voice</div>
-
-    <div class="info-message" id="infoMessage">
-        💡 Tip: Enter a room name and click "Join Room" to start
+<div class="phone-container">
+    <div class="status-bar">
+        <span>📱 ProTalk</span>
+        <span id="time">--:--</span>
     </div>
 
-    <div class="room-section">
-        <div class="input-group">
-            <label>🔐 ROOM ID</label>
-            <div class="room-input-wrapper">
-                <input type="text" id="roomIdInput" placeholder="Enter room name" value="lounge">
-                <button id="joinBtn" class="btn-primary">Join Room</button>
+    <div class="main-content">
+        <!-- Profile Section -->
+        <div class="profile-section" id="profileSection">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-name" id="profileName">Set up profile</div>
+            <div class="profile-id" id="profileId">Not registered</div>
+            <button class="edit-profile" onclick="showSetupModal()">Edit Profile</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="contacts">📞 Contacts</div>
+            <div class="tab" data-tab="history">🕒 History</div>
+        </div>
+
+        <!-- Contacts Tab -->
+        <div id="contactsTab">
+            <div class="contact-list" id="contactList"></div>
+            <div class="add-contact" onclick="showAddContactModal()">
+                + Add New Contact
             </div>
         </div>
-        <div class="button-group">
-            <button id="leaveBtn" class="btn-danger">Leave Room</button>
+
+        <!-- History Tab (Hidden initially) -->
+        <div id="historyTab" style="display: none;">
+            <div class="call-history" id="callHistory"></div>
         </div>
     </div>
+</div>
 
-    <div class="status-card">
-        <div class="status-badge">
-            <span class="led disconnected" id="statusLed"></span>
-            <span class="status-text" id="statusText">Disconnected</span>
-        </div>
-        <div class="room-badge" id="roomBadge">No room</div>
-        <div class="participant-count" id="participantCount">👥 0</div>
-    </div>
-
-    <div class="voice-visualizer" id="voiceVisualizer">
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-        <div class="visualizer-bar"></div>
-    </div>
-
-    <div class="talk-container">
-        <div id="talkButton" class="talk-button disabled">
-            <div class="mic-icon">🎤</div>
-            <div class="talk-label">JOIN A ROOM</div>
-            <div class="talk-status">First join a room</div>
+<!-- Setup Profile Modal -->
+<div class="modal" id="setupModal">
+    <div class="modal-content">
+        <h3 style="color: white; margin-bottom: 16px;">Set up your profile</h3>
+        <input type="text" id="userName" placeholder="Your name" value="User">
+        <input type="text" id="userId" placeholder="User ID (unique)" value="user_">
+        <div class="modal-buttons">
+            <button onclick="saveProfile()">Save</button>
         </div>
     </div>
+</div>
 
-    <div class="participants-section">
-        <div class="participants-title">👥 PARTICIPANTS</div>
-        <div class="participants-list" id="participantsList">
-            <div class="participant">You (not joined)</div>
+<!-- Add Contact Modal -->
+<div class="modal" id="addContactModal">
+    <div class="modal-content">
+        <h3 style="color: white;">Add Contact</h3>
+        <input type="text" id="contactUserId" placeholder="User ID">
+        <input type="text" id="contactName" placeholder="Contact name (optional)">
+        <div class="modal-buttons">
+            <button onclick="addContact()">Add</button>
+            <button onclick="closeAddContactModal()">Cancel</button>
         </div>
     </div>
+</div>
 
-    <footer>
-        <div>🎙️ Click the button to start/stop talking</div>
-        <div style="margin-top: 4px;">🔒 Stable WebRTC connections with auto-reconnect</div>
-    </footer>
+<!-- Call Notification -->
+<div class="call-notification" id="callNotification">
+    <h4>📞 Incoming Call</h4>
+    <p id="callerName">Caller</p>
+    <div class="call-actions">
+        <button class="accept-call" onclick="acceptCall()">Accept</button>
+        <button class="reject-call" onclick="rejectCall()">Reject</button>
+    </div>
+</div>
+
+<!-- Call Screen -->
+<div class="call-screen" id="callScreen">
+    <div class="call-avatar" id="callAvatar">👤</div>
+    <div class="caller-name" id="callScreenName">Calling...</div>
+    <div class="call-status" id="callStatus">Connecting</div>
+    <div class="push-to-talk" id="pushToTalk" onmousedown="startTalking()" onmouseup="stopTalking()" ontouchstart="startTalking()" ontouchend="stopTalking()">
+        🎤 HOLD TO TALK
+    </div>
+    <button class="end-call" onclick="endCall()">End Call</button>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    // DOM Elements
-    const roomInput = document.getElementById('roomIdInput');
-    const joinBtn = document.getElementById('joinBtn');
-    const leaveBtn = document.getElementById('leaveBtn');
-    const talkButton = document.getElementById('talkButton');
-    const statusLed = document.getElementById('statusLed');
-    const statusText = document.getElementById('statusText');
-    const roomBadge = document.getElementById('roomBadge');
-    const participantCountSpan = document.getElementById('participantCount');
-    const participantsListDiv = document.getElementById('participantsList');
-    const visualizerBars = document.querySelectorAll('.visualizer-bar');
-    const infoMessage = document.getElementById('infoMessage');
-
-    // Global state
-    let localStream = null;
-    let peerConnections = new Map();
+    // ==================== Global State ====================
+    let currentUser = null;
     let socket = null;
+    let contacts = [];
+    let callHistory = [];
+    let currentCall = null;
+    let pendingCall = null;
+    let peerConnection = null;
+    let localStream = null;
     let currentRoom = null;
     let isTalking = false;
-    let myUserId = null;
-    let users = new Set();
-    let audioElements = new Map();
-    let reconnectAttempts = 0;
-    let maxReconnectAttempts = 10;
-    let heartbeatInterval = null;
+    let remoteAudio = null;
 
-    // WebRTC configuration with TURN servers for better connectivity
+    // ==================== WebRTC Configuration ====================
     const configuration = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
             { urls: 'stun:stun2.l.google.com:19302' },
             { urls: 'stun:stun3.l.google.com:19302' },
-            { urls: 'stun:stun4.l.google.com:19302' },
-            { urls: 'stun:stun.stunprotocol.org:3478' }
-        ],
-        iceCandidatePoolSize: 10,
-        iceTransportPolicy: 'all',
-        bundlePolicy: 'max-bundle',
-        rtcpMuxPolicy: 'require'
+            { urls: 'stun:stun4.l.google.com:19302' }
+        ]
     };
 
-    // Helper functions
-    function showMessage(message, type = 'info') {
-        infoMessage.innerHTML = type === 'error' ? `⚠️ ${message}` : type === 'warning' ? `⚠️ ${message}` : `💡 ${message}`;
-        infoMessage.className = `info-message ${type}`;
-        setTimeout(() => {
-            if (infoMessage.innerHTML === `💡 ${message}` || infoMessage.innerHTML === `⚠️ ${message}`) {
-                infoMessage.innerHTML = '💡 Tip: Enter a room name and click "Join Room" to start';
-                infoMessage.className = 'info-message';
-            }
-        }, 4000);
-    }
-
-    function updateStatus(status, text) {
-        if (status === 'connected') {
-            statusLed.className = 'led connected';
-            statusText.textContent = text || 'Connected';
-        } else if (status === 'connecting') {
-            statusLed.className = 'led connecting';
-            statusText.textContent = text || 'Connecting...';
+    // ==================== Initialize ====================
+    async function init() {
+        // Check for saved user
+        const savedUser = localStorage.getItem('protalk_user');
+        if (savedUser) {
+            const user = JSON.parse(savedUser);
+            currentUser = user;
+            updateProfileUI();
+            connectSocket();
         } else {
-            statusLed.className = 'led disconnected';
-            statusText.textContent = text || 'Disconnected';
+            showSetupModal();
         }
-    }
-
-    // Microphone initialization
-    async function initMicrophone() {
+        
+        // Request microphone
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true,
-                    sampleRate: 48000
-                } 
-            });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             localStream = stream;
             localStream.getAudioTracks().forEach(track => track.enabled = false);
-            console.log('✅ Microphone ready');
-            showMessage('Microphone ready! Join a room to start talking.');
-            return true;
         } catch (err) {
             console.error('Microphone error:', err);
-            showMessage('Please allow microphone access to use the app', 'error');
-            return false;
+        }
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.getElementById('contactsTab').style.display = tabName === 'contacts' ? 'block' : 'none';
+                document.getElementById('historyTab').style.display = tabName === 'history' ? 'block' : 'none';
+                
+                if (tabName === 'history') loadCallHistory();
+            });
+        });
+        
+        // Update time
+        updateTime();
+        setInterval(updateTime, 1000);
+    }
+    
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // ==================== Profile Management ====================
+    function showSetupModal() {
+        document.getElementById('setupModal').classList.add('active');
+        document.getElementById('userId').value = 'user_' + Math.floor(Math.random() * 10000);
+    }
+    
+    async function saveProfile() {
+        const name = document.getElementById('userName').value.trim();
+        let userId = document.getElementById('userId').value.trim();
+        
+        if (!name) {
+            alert('Please enter your name');
+            return;
+        }
+        
+        if (!userId) {
+            userId = 'user_' + Date.now();
+        }
+        
+        currentUser = {
+            userId: userId,
+            name: name,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=667eea&color=fff`
+        };
+        
+        localStorage.setItem('protalk_user', JSON.stringify(currentUser));
+        updateProfileUI();
+        document.getElementById('setupModal').classList.remove('active');
+        
+        // Register with server
+        if (socket && socket.connected) {
+            socket.emit('register-user', {
+                userId: currentUser.userId,
+                name: currentUser.name,
+                avatar: currentUser.avatar
+            });
+        } else {
+            connectSocket();
+        }
+        
+        // Load contacts
+        loadContacts();
+    }
+    
+    function updateProfileUI() {
+        if (currentUser) {
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileId').textContent = currentUser.userId;
+            document.getElementById('profileAvatar').innerHTML = currentUser.name.charAt(0).toUpperCase();
         }
     }
-
-    // Create peer connection
-    async function createPeerConnection(peerId) {
+    
+    // ==================== Socket Connection ====================
+    function connectSocket() {
+        socket = io();
+        
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            if (currentUser) {
+                socket.emit('register-user', {
+                    userId: currentUser.userId,
+                    name: currentUser.name,
+                    avatar: currentUser.avatar
+                });
+            }
+        });
+        
+        socket.on('registration-success', ({ profile }) => {
+            console.log('Registration successful');
+        });
+        
+        socket.on('user-status-changed', ({ userId, status }) => {
+            updateContactStatus(userId, status);
+        });
+        
+        socket.on('incoming-call', ({ callId, from, fromName, roomId }) => {
+            pendingCall = { callId, from, fromName, roomId };
+            document.getElementById('callerName').textContent = `${fromName} is calling...`;
+            document.getElementById('callNotification').classList.add('active');
+            
+            // Add to call history
+            addToHistory(fromName, 'incoming', 'missed');
+        });
+        
+        socket.on('call-accepted', ({ callId, roomId, toUserId, toName }) => {
+            document.getElementById('callStatus').textContent = 'Connected';
+            currentRoom = roomId;
+            startCall(roomId, toUserId);
+        });
+        
+        socket.on('call-rejected', ({ callId }) => {
+            alert('Call rejected');
+            document.getElementById('callScreen').classList.remove('active');
+            currentCall = null;
+        });
+        
+        socket.on('call-ended', () => {
+            endCall();
+        });
+        
+        // WebRTC signaling
+        socket.on('offer', async ({ offer, from }) => {
+            if (!peerConnection) {
+                peerConnection = createPeerConnection(from);
+            }
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('answer', { answer: peerConnection.localDescription, to: from });
+        });
+        
+        socket.on('answer', async ({ answer, from }) => {
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            }
+        });
+        
+        socket.on('ice-candidate', async ({ candidate, from }) => {
+            if (peerConnection && candidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+        });
+        
+        socket.on('user-joined', ({ userId }) => {
+            if (peerConnection) {
+                // Handle user joined for group calls
+            }
+        });
+        
+        socket.on('user-left', ({ userId }) => {
+            console.log('User left:', userId);
+        });
+    }
+    
+    // ==================== WebRTC ====================
+    function createPeerConnection(peerId) {
         const pc = new RTCPeerConnection(configuration);
         
         if (localStream) {
@@ -529,394 +715,284 @@
         }
         
         pc.onicecandidate = (event) => {
-            if (event.candidate && socket && socket.connected) {
-                socket.emit('ice-candidate', {
-                    candidate: event.candidate,
-                    to: peerId
-                });
+            if (event.candidate && socket) {
+                socket.emit('ice-candidate', { candidate: event.candidate, to: peerId });
             }
         };
         
         pc.ontrack = (event) => {
-            console.log(`📡 Received audio from ${peerId}`);
-            
-            if (audioElements.has(peerId)) {
-                const oldAudio = audioElements.get(peerId);
-                if (oldAudio && oldAudio.parentNode) oldAudio.parentNode.removeChild(oldAudio);
+            if (!remoteAudio) {
+                remoteAudio = new Audio();
+                remoteAudio.autoplay = true;
+                document.body.appendChild(remoteAudio);
             }
-            
-            const audioEl = new Audio();
-            audioEl.srcObject = event.streams[0];
-            audioEl.autoplay = true;
-            audioEl.volume = 1.0;
-            document.body.appendChild(audioEl);
-            audioElements.set(peerId, audioEl);
-        };
-        
-        pc.onconnectionstatechange = () => {
-            console.log(`Connection with ${peerId}: ${pc.connectionState}`);
-            if (pc.connectionState === 'failed') {
-                console.log(`Connection failed with ${peerId}, attempting reconnect...`);
-                setTimeout(() => reconnectWithPeer(peerId), 2000);
-            }
+            remoteAudio.srcObject = event.streams[0];
         };
         
         return pc;
     }
     
-    async function reconnectWithPeer(peerId) {
-        if (!currentRoom || !users.has(peerId)) return;
-        
-        console.log(`🔄 Reconnecting with ${peerId}`);
-        const pc = await createPeerConnection(peerId);
-        peerConnections.set(peerId, pc);
-        
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        
-        if (socket && socket.connected) {
-            socket.emit('offer', { offer: pc.localDescription, to: peerId });
-        }
-    }
-    
-    function closePeerConnection(peerId) {
-        if (peerConnections.has(peerId)) {
-            peerConnections.get(peerId).close();
-            peerConnections.delete(peerId);
-        }
-        if (audioElements.has(peerId)) {
-            const audio = audioElements.get(peerId);
-            if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
-            audioElements.delete(peerId);
-        }
-        users.delete(peerId);
-        updateParticipantsUI();
-    }
-
-    // Voice visualizer
-    function startVisualizer() {
-        if (!localStream) return;
-        
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaStreamSource(localStream);
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser);
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        
-        function update() {
-            if (!isTalking) {
-                visualizerBars.forEach(bar => bar.style.height = '20px');
-                requestAnimationFrame(update);
+    async function startCall(roomId, toUserId) {
+        if (!localStream) {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                localStream.getAudioTracks().forEach(track => track.enabled = false);
+            } catch (err) {
+                console.error('Microphone error:', err);
                 return;
             }
-            
-            analyser.getByteFrequencyData(dataArray);
-            let sum = 0;
-            for (let i = 0; i < 20; i++) sum += dataArray[i];
-            let avg = sum / 20;
-            let level = Math.min(1, avg / 150);
-            
-            visualizerBars.forEach((bar, idx) => {
-                let height = 20 + (level * 50 * (idx / visualizerBars.length));
-                bar.style.height = `${Math.min(60, Math.max(20, height))}px`;
-            });
-            
-            requestAnimationFrame(update);
-        }
-        update();
-    }
-
-    // Toggle talking
-    function toggleTalking() {
-        if (!currentRoom || !localStream) {
-            showMessage('Please join a room first', 'warning');
-            return;
         }
         
-        if (users.size === 0 && peerConnections.size === 0) {
-            showMessage('No one else is in the room. Wait for others to join.', 'warning');
-            return;
+        socket.emit('join-room', { room: roomId, userId: currentUser.userId });
+        
+        if (!peerConnection) {
+            peerConnection = createPeerConnection(toUserId);
         }
         
-        isTalking = !isTalking;
-        
-        if (isTalking) {
-            localStream.getAudioTracks().forEach(track => track.enabled = true);
-            talkButton.classList.add('talking');
-            talkButton.querySelector('.talk-label').textContent = '🔴 TALKING';
-            talkButton.querySelector('.talk-status').textContent = 'Click to stop';
-            startVisualizer();
-            showMessage('You are now talking! Everyone can hear you.');
-        } else {
-            localStream.getAudioTracks().forEach(track => track.enabled = false);
-            talkButton.classList.remove('talking');
-            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-            talkButton.querySelector('.talk-status').textContent = 'Click to speak';
-            showMessage('You stopped talking.');
+        if (peerConnection.signalingState === 'stable') {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('offer', { offer: peerConnection.localDescription, to: toUserId });
         }
-    }
-
-    // Update UI
-    function updateParticipantsUI() {
-        const count = users.size;
-        participantCountSpan.textContent = `👥 ${count + 1}`;
-        
-        if (!currentRoom) {
-            participantsListDiv.innerHTML = '<div class="participant">You (not joined)</div>';
-            return;
-        }
-        
-        let html = '<div class="participant">👤 You</div>';
-        for (let userId of users) {
-            const shortId = userId.substring(0, 8);
-            html += `
-                <div class="participant">
-                    <span class="participant-dot"></span>
-                    ${shortId}
-                </div>
-            `;
-        }
-        
-        if (users.size === 0) {
-            html += '<div style="color: #9ca3af; font-size: 12px; padding: 8px;">Waiting for others to join...</div>';
-        }
-        
-        participantsListDiv.innerHTML = html;
-    }
-
-    // Socket setup with reconnection
-    function setupSocket() {
-        const serverUrl = window.location.origin;
-        
-        socket = io(serverUrl, {
-            transports: ['websocket', 'polling'],
-            reconnection: true,
-            reconnectionAttempts: maxReconnectAttempts,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            timeout: 20000
-        });
-        
-        socket.on('connect', () => {
-            console.log('✅ Connected to server');
-            myUserId = socket.id;
-            updateStatus('connected', 'Connected');
-            reconnectAttempts = 0;
-            showMessage('Connected to server! Join a room to start.');
-            talkButton.classList.remove('disabled');
-            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-            talkButton.querySelector('.talk-status').textContent = 'Click to speak';
-        });
-        
-        socket.on('connection-confirmed', ({ socketId }) => {
-            console.log(`Connection confirmed: ${socketId}`);
-            myUserId = socketId;
-        });
-        
-        socket.on('disconnect', (reason) => {
-            console.log(`Disconnected: ${reason}`);
-            updateStatus('connecting', 'Reconnecting...');
-            showMessage('Connection lost. Reconnecting...', 'warning');
-            talkButton.classList.add('disabled');
-            talkButton.querySelector('.talk-label').textContent = 'RECONNECTING';
-        });
-        
-        socket.on('connect_error', (error) => {
-            console.error('Connection error:', error);
-            reconnectAttempts++;
-            if (reconnectAttempts >= maxReconnectAttempts) {
-                showMessage('Failed to connect. Please refresh the page.', 'error');
-            }
-        });
-        
-        // Room events
-        socket.on('existing-users', async ({ users: existingUsers }) => {
-            console.log('Existing users:', existingUsers);
-            
-            for (let userId of existingUsers) {
-                if (userId !== myUserId) {
-                    users.add(userId);
-                    const pc = await createPeerConnection(userId);
-                    peerConnections.set(userId, pc);
-                    
-                    const offer = await pc.createOffer();
-                    await pc.setLocalDescription(offer);
-                    socket.emit('offer', { offer: pc.localDescription, to: userId });
-                }
-            }
-            
-            updateParticipantsUI();
-            if (existingUsers.length > 0) {
-                showMessage(`${existingUsers.length} other user(s) in the room!`);
-            }
-        });
-        
-        socket.on('user-joined', async ({ userId }) => {
-            if (userId === myUserId) return;
-            
-            console.log(`User joined: ${userId}`);
-            users.add(userId);
-            
-            const pc = await createPeerConnection(userId);
-            peerConnections.set(userId, pc);
-            
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            socket.emit('offer', { offer: pc.localDescription, to: userId });
-            
-            updateParticipantsUI();
-            showMessage(`New user joined! Total: ${users.size + 1} participants`);
-        });
-        
-        socket.on('user-left', ({ userId }) => {
-            console.log(`User left: ${userId}`);
-            closePeerConnection(userId);
-            updateParticipantsUI();
-            showMessage(`A user left. ${users.size + 1} participants remaining.`);
-        });
-        
-        socket.on('offer', async ({ offer, from }) => {
-            if (from === myUserId) return;
-            
-            let pc = peerConnections.get(from);
-            if (!pc) {
-                pc = await createPeerConnection(from);
-                peerConnections.set(from, pc);
-                users.add(from);
-                updateParticipantsUI();
-            }
-            
-            await pc.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            socket.emit('answer', { answer: pc.localDescription, to: from });
-        });
-        
-        socket.on('answer', async ({ answer, from }) => {
-            const pc = peerConnections.get(from);
-            if (pc) {
-                await pc.setRemoteDescription(new RTCSessionDescription(answer));
-            }
-        });
-        
-        socket.on('ice-candidate', async ({ candidate, from }) => {
-            const pc = peerConnections.get(from);
-            if (pc && candidate) {
-                try {
-                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                } catch (err) {
-                    console.error('ICE candidate error:', err);
-                }
-            }
-        });
-        
-        socket.on('room-joined', ({ room, participantCount }) => {
-            console.log(`Joined room: ${room} with ${participantCount} participants`);
-        });
-    }
-
-    // Room management
-    async function joinRoom() {
-        const roomId = roomInput.value.trim();
-        if (!roomId) {
-            showMessage('Please enter a room ID', 'error');
-            return;
-        }
-        
-        if (!localStream) {
-            const success = await initMicrophone();
-            if (!success) return;
-        }
-        
-        if (!socket) {
-            setupSocket();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        
-        if (currentRoom) {
-            leaveRoom();
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-        
-        currentRoom = roomId;
-        socket.emit('join-room', { room: currentRoom });
-        
-        roomBadge.textContent = `Room: ${currentRoom}`;
-        updateStatus('connected', 'Connected');
-        
-        if (isTalking) {
-            isTalking = false;
-            localStream.getAudioTracks().forEach(track => track.enabled = false);
-            talkButton.classList.remove('talking');
-            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-        }
-        
-        talkButton.classList.remove('disabled');
-        showMessage(`✅ Joined room: ${currentRoom}`);
-        console.log(`Joined room: ${currentRoom}`);
     }
     
-    function leaveRoom() {
-        if (!currentRoom || !socket) return;
-        
-        for (let [peerId, pc] of peerConnections) {
-            pc.close();
-            if (audioElements.has(peerId)) {
-                const audio = audioElements.get(peerId);
-                if (audio && audio.parentNode) audio.parentNode.removeChild(audio);
-            }
+    // ==================== Call Actions ====================
+    function makeCall(userId, userName) {
+        if (!currentUser) {
+            alert('Please set up your profile first');
+            return;
         }
-        peerConnections.clear();
-        audioElements.clear();
-        users.clear();
         
-        socket.emit('leave-room', { room: currentRoom });
+        const roomId = `call_${Date.now()}`;
+        currentCall = { to: userId, name: userName, roomId };
         
+        document.getElementById('callScreenName').textContent = `Calling ${userName}...`;
+        document.getElementById('callStatus').textContent = 'Ringing';
+        document.getElementById('callScreen').classList.add('active');
+        
+        socket.emit('initiate-call', {
+            fromUserId: currentUser.userId,
+            toUserId: userId,
+            fromName: currentUser.name,
+            roomId: roomId
+        });
+        
+        addToHistory(userName, 'outgoing', 'dialed');
+    }
+    
+    function acceptCall() {
+        if (pendingCall) {
+            document.getElementById('callNotification').classList.remove('active');
+            document.getElementById('callScreenName').textContent = `${pendingCall.fromName}`;
+            document.getElementById('callStatus').textContent = 'Connecting...';
+            document.getElementById('callScreen').classList.add('active');
+            
+            socket.emit('accept-call', {
+                callId: pendingCall.callId,
+                roomId: pendingCall.roomId,
+                fromUserId: pendingCall.from,
+                toUserId: currentUser.userId
+            });
+            
+            currentCall = pendingCall;
+            startCall(pendingCall.roomId, pendingCall.from);
+            pendingCall = null;
+        }
+    }
+    
+    function rejectCall() {
+        if (pendingCall) {
+            socket.emit('reject-call', {
+                callId: pendingCall.callId,
+                fromUserId: pendingCall.from,
+                toUserId: currentUser.userId
+            });
+            document.getElementById('callNotification').classList.remove('active');
+            pendingCall = null;
+        }
+    }
+    
+    function endCall() {
+        if (currentCall) {
+            socket.emit('end-call', {
+                roomId: currentCall.roomId,
+                fromUserId: currentUser.userId,
+                toUserId: currentCall.to
+            });
+        }
+        
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        
+        if (remoteAudio) {
+            remoteAudio.srcObject = null;
+            remoteAudio = null;
+        }
+        
+        document.getElementById('callScreen').classList.remove('active');
+        currentCall = null;
         currentRoom = null;
-        roomBadge.textContent = 'No room';
-        updateStatus('disconnected', 'Disconnected');
-        updateParticipantsUI();
+        isTalking = false;
         
         if (localStream) {
             localStream.getAudioTracks().forEach(track => track.enabled = false);
         }
-        if (isTalking) {
-            isTalking = false;
-            talkButton.classList.remove('talking');
-            talkButton.querySelector('.talk-label').textContent = 'TAP TO TALK';
-        }
-        
-        talkButton.classList.add('disabled');
-        talkButton.querySelector('.talk-label').textContent = 'JOIN A ROOM';
-        talkButton.querySelector('.talk-status').textContent = 'First join a room';
-        
-        showMessage('Left the room.');
     }
-
-    // Event listeners
-    joinBtn.addEventListener('click', joinRoom);
-    leaveBtn.addEventListener('click', leaveRoom);
-    talkButton.addEventListener('click', toggleTalking);
     
-    // Initialize on load
-    window.addEventListener('load', async () => {
-        console.log('Walkie-Talkie app loading...');
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            await initMicrophone();
-        } catch (err) {
-            console.log('Microphone not granted on load');
+    function startTalking() {
+        if (currentCall && localStream) {
+            isTalking = true;
+            localStream.getAudioTracks().forEach(track => track.enabled = true);
+            document.getElementById('pushToTalk').style.background = 'white';
+            document.getElementById('pushToTalk').style.color = '#667eea';
         }
-        setupSocket();
-    });
+    }
     
-    // Cleanup
-    window.addEventListener('beforeunload', () => {
-        if (heartbeatInterval) clearInterval(heartbeatInterval);
-        if (localStream) localStream.getTracks().forEach(track => track.stop());
-        if (socket) socket.disconnect();
-    });
+    function stopTalking() {
+        if (localStream) {
+            isTalking = false;
+            localStream.getAudioTracks().forEach(track => track.enabled = false);
+            document.getElementById('pushToTalk').style.background = 'rgba(255,255,255,0.2)';
+            document.getElementById('pushToTalk').style.color = 'white';
+        }
+    }
+    
+    // ==================== Contacts Management ====================
+    async function loadContacts() {
+        if (!currentUser) return;
+        
+        try {
+            const response = await fetch(`/api/contacts/${currentUser.userId}`);
+            const data = await response.json();
+            contacts = data.contacts || [];
+            renderContacts();
+        } catch (err) {
+            console.error('Error loading contacts:', err);
+        }
+    }
+    
+    function renderContacts() {
+        const container = document.getElementById('contactList');
+        if (contacts.length === 0) {
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">No contacts yet. Add your first contact!</div>';
+            return;
+        }
+        
+        container.innerHTML = contacts.map(contact => `
+            <div class="contact-item" onclick="makeCall('${contact.userId}', '${contact.name}')">
+                <div class="contact-avatar">${contact.name.charAt(0)}</div>
+                <div class="contact-info">
+                    <div class="contact-name">${contact.name}</div>
+                    <div class="contact-status">
+                        <span class="status-dot" id="status-${contact.userId}"></span>
+                        <span>Checking status...</span>
+                    </div>
+                </div>
+                <button class="call-button" onclick="event.stopPropagation(); makeCall('${contact.userId}', '${contact.name}')">Call</button>
+            </div>
+        `).join('');
+    }
+    
+    function updateContactStatus(userId, status) {
+        const dot = document.getElementById(`status-${userId}`);
+        if (dot) {
+            dot.className = `status-dot ${status === 'online' ? '' : 'offline'}`;
+            const span = dot.nextElementSibling;
+            if (span) span.textContent = status === 'online' ? 'Online' : 'Offline';
+        }
+    }
+    
+    async function addContact() {
+        const contactUserId = document.getElementById('contactUserId').value.trim();
+        const contactName = document.getElementById('contactName').value.trim();
+        
+        if (!contactUserId) {
+            alert('Please enter a User ID');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/contacts/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: currentUser.userId,
+                    contactId: contactUserId,
+                    contactName: contactName || contactUserId
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                contacts = data.contacts;
+                renderContacts();
+                closeAddContactModal();
+            } else {
+                alert(data.message || 'Failed to add contact');
+            }
+        } catch (err) {
+            console.error('Error adding contact:', err);
+            alert('Failed to add contact');
+        }
+    }
+    
+    function showAddContactModal() {
+        document.getElementById('addContactModal').classList.add('active');
+        document.getElementById('contactUserId').value = '';
+        document.getElementById('contactName').value = '';
+    }
+    
+    function closeAddContactModal() {
+        document.getElementById('addContactModal').classList.remove('active');
+    }
+    
+    // ==================== Call History ====================
+    function addToHistory(name, type, status) {
+        callHistory.unshift({
+            name,
+            type,
+            status,
+            time: new Date().toLocaleTimeString(),
+            date: new Date().toLocaleDateString()
+        });
+        
+        // Keep only last 50 calls
+        if (callHistory.length > 50) callHistory.pop();
+        
+        localStorage.setItem('protalk_history', JSON.stringify(callHistory));
+        loadCallHistory();
+    }
+    
+    function loadCallHistory() {
+        const saved = localStorage.getItem('protalk_history');
+        if (saved) {
+            callHistory = JSON.parse(saved);
+        }
+        
+        const container = document.getElementById('callHistory');
+        if (callHistory.length === 0) {
+            container.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">No call history yet</div>';
+            return;
+        }
+        
+        container.innerHTML = callHistory.map(call => `
+            <div class="history-item">
+                <div class="history-avatar">${call.name.charAt(0)}</div>
+                <div class="history-info">
+                    <div class="history-name">${call.name}</div>
+                    <div class="call-time">${call.type === 'outgoing' ? '📞 Outgoing' : '📱 Incoming'} • ${call.time} • ${call.date}</div>
+                </div>
+                <div style="font-size: 12px; color: ${call.status === 'missed' ? '#ef4444' : '#4ade80'}">
+                    ${call.status === 'missed' ? 'Missed' : call.status === 'dialed' ? 'Dialed' : 'Connected'}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Initialize
+    init();
 </script>
 </body>
 </html>
